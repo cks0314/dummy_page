@@ -645,7 +645,7 @@ $$
 </section>
 
 <!-- ===================================================== -->
-<!-- RESULTS -->
+<!-- EXPERIMENTAL EVALUATION -->
 <!-- ===================================================== -->
 
 <section class="section" id="results">
@@ -653,8 +653,102 @@ $$
     <div class="container is-max-desktop">
 
         <h2 class="title is-3 has-text-centered">
-            Results
+            Experimental Evaluation
         </h2>
+
+        <p class="subtitle has-text-centered results-subtitle">
+
+            Each animation compares four controllers under the
+            <span class="highlight">same obstacle realization</span> and
+            <span class="highlight">identical adversarial maneuvers</span>.
+            Only the controller changes, enabling a direct comparison of their
+            robustness and feasibility.
+
+        </p>
+
+
+        <!-- ===================================================== -->
+        <!-- Result 1 -->
+        <!-- ===================================================== -->
+
+        <div class="result-card">
+
+            <h3 class="title is-4">
+
+                Conventional DPCBF Fails Under Obstacle Maneuvers
+
+            </h3>
+
+            <img
+                src="static/images/demo_compare_13.gif"
+                alt="Comparison 1"
+                class="result-gif">
+
+            <p class="figure-caption">
+
+                Conventional DPCBF fails once nearby obstacles maneuver,
+                whereas all AR-DPCBF variants successfully compensate for the
+                bounded adversarial motion and safely reach the goal.
+
+            </p>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- Result 2 -->
+        <!-- ===================================================== -->
+
+        <div class="result-card">
+
+            <h3 class="title is-4">
+
+                Soft Barrier Relaxation Preserves Feasibility
+
+            </h3>
+
+            <img
+                src="static/images/demo_compare_softbuf.gif"
+                alt="Comparison 2"
+                class="result-gif">
+
+            <p class="figure-caption">
+
+                Hard AR-DPCBF becomes overly conservative in this scenario,
+                whereas the proposed soft formulations maintain feasibility
+                while preserving safe navigation.
+
+            </p>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- Result 3 -->
+        <!-- ===================================================== -->
+
+        <div class="result-card">
+
+            <h3 class="title is-4">
+
+                Buffer Soft AR-DPCBF Achieves the Highest Robustness
+
+            </h3>
+
+            <img
+                src="static/images/demo_compare_bufonly.gif"
+                alt="Comparison 3"
+                class="result-gif">
+
+            <p class="figure-caption">
+
+                Under the most challenging adversarial maneuvers, only Buffer
+                Soft AR-DPCBF retains sufficient safety margin to complete the
+                task without collision.
+
+            </p>
+
+        </div>
 
     </div>
 
