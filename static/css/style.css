@@ -1,0 +1,136 @@
+/* --------------------------------------------------
+   General
+-------------------------------------------------- */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Google Sans", "Noto Sans", sans-serif;
+    color: #2c2c2c;
+    background: #ffffff;
+    line-height: 1.7;
+    font-size: 17px;
+}
+
+
+/* --------------------------------------------------
+   Typography
+-------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    color: #111111;
+    font-weight: 700;
+}
+
+.title {
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: #666666;
+}
+
+
+/* --------------------------------------------------
+   Hero
+-------------------------------------------------- */
+
+.hero {
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.hero .title {
+    font-size: 3rem;
+}
+
+.hero .subtitle {
+    margin-top: 0.5rem;
+    font-size: 1.35rem;
+}
+
+
+/* --------------------------------------------------
+   Sections
+-------------------------------------------------- */
+
+.section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+
+/* --------------------------------------------------
+   Images
+-------------------------------------------------- */
+
+img {
+    border-radius: 10px;
+    max-width: 100%;
+}
+
+
+/* --------------------------------------------------
+   Videos
+-------------------------------------------------- */
+
+video {
+    width: 100%;
+    border-radius: 12px;
+}
+
+
+/* --------------------------------------------------
+   Buttons
+-------------------------------------------------- */
+
+.button {
+
+    transition: all 0.25s ease;
+
+    border-radius: 999px;
+
+    padding-left: 1.4rem;
+
+    padding-right: 1.4rem;
+}
+
+.button:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+/* --------------------------------------------------
+   Code
+-------------------------------------------------- */
+
+pre {
+
+    border-radius: 10px;
+
+    padding: 1rem;
+
+}
+
+
+/* --------------------------------------------------
+   Footer
+-------------------------------------------------- */
+
+.footer {
+
+    background: white;
+
+    border-top: 1px solid #eeeeee;
+
+    padding: 2rem;
+
+}
