@@ -252,19 +252,102 @@
 </section>
 
 <!-- ===================================================== -->
-<!-- METHOD -->
-<!-- ===================================================== -->
 
-<section class="section" id="method">
+<!-- ===================== The Problem ===================== -->
+<section class="section" id="problem">
+  <div class="container is-max-desktop">
 
-    <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">The Problem</h2>
 
-        <h2 class="title is-3 has-text-centered">
-            Method
-        </h2>
+    <p class="subtitle has-text-centered" style="max-width:900px;margin:0 auto 2rem auto;">
+      Existing <strong>Dynamic Parabolic Control Barrier Functions (DPCBFs)</strong>
+      assume obstacle velocity remains <span class="highlight">constant</span> over
+      the prediction horizon. However, real obstacles may
+      <span class="highlight">accelerate</span>,
+      <span class="highlight">decelerate</span>, or
+      <span class="highlight">change their heading</span>,
+      introducing an unmodeled maneuvering effect that silently invalidates the
+      nominal safety certificate.
+    </p>
+
+    <!-- Video -->
+    <div class="has-text-centered mb-6">
+      <video
+        controls
+        autoplay
+        muted
+        loop
+        playsinline
+        style="width:100%;max-width:900px;border-radius:12px;
+               box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <source src="static/videos/problem_failure.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+
+      </video>
+
+      <p class="is-size-6 has-text-grey mt-3">
+        <strong>Failure of conventional DPCBF.</strong>
+        The controller continues to satisfy the nominal barrier constraint,
+        yet the obstacle begins maneuvering, causing the underlying safety
+        guarantee to become invalid.
+      </p>
+    </div>
+
+    <!-- Equation Card -->
+    <div class="box" style="max-width:850px;margin:auto;">
+
+      <h4 class="title is-5 has-text-centered">
+        Why does the safety certificate fail?
+      </h4>
+
+      <div class="content has-text-centered">
+
+        <p>
+          DPCBF assumes
+        </p>
+
+        <p style="font-size:1.35rem;">
+          $$\dot h = \dot h_{\mathrm{DPCBF}}$$
+        </p>
+
+        <p style="margin-top:1rem;">
+          but the true barrier dynamics become
+        </p>
+
+        <p style="font-size:1.45rem;">
+          $$\dot h_{\mathrm{true}}
+          =
+          \dot h_{\mathrm{DPCBF}}
+          +
+          {\color{#d62728}{\Delta(t)}}$$
+        </p>
+
+        <p style="margin-top:1.5rem;">
+          where the additional maneuvering term is
+        </p>
+
+        <p style="font-size:1.1rem;">
+        $$
+        \Delta(t)=
+        a_{\rm obs}\cos\tilde{\theta}_{\rm obs}
+        +
+        v_{\rm obs}\omega_{\rm obs}
+        \left(
+        2\lambda
+        \dot{\tilde y}_{\rm rel}
+        \cos\tilde{\theta}_{\rm obs}
+        -
+        \sin\tilde{\theta}_{\rm obs}
+        \right).
+        $$
+        </p>
+
+      </div>
 
     </div>
 
+  </div>
 </section>
 
 <!-- ===================================================== -->
