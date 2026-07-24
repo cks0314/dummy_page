@@ -57,9 +57,22 @@ h5 {
 /*--------------------------------------------------
    Highlight
 ----------------------------------------------------*/
-.highlight {
-    font-weight: 600;
-    color: #1f77b4;      /* Use your theme color */
+.highlight{
+    color:#d62728;
+    font-weight:600;
+}
+
+#problem .box{
+    border-radius:12px;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+#problem video{
+    transition:transform .25s ease;
+}
+
+#problem video:hover{
+    transform:scale(1.01);
 }
 
 /* --------------------------------------------------
