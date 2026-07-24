@@ -213,7 +213,7 @@
       <!-- Figure -->
       <div class="column is-6">
 
-        <img src="static/images/bicycle_kinematics_combined_vert.png"
+        <img src="static/images/bicycle_kinematics_combined.png"
              alt="Navigation environment">
 
         <p class="figure-caption">
@@ -228,34 +228,15 @@
       <div class="column is-6">
 
         <p>
-          We consider a bicycle-model mobile robot navigating toward a goal in
-          dynamic environments populated with independently moving obstacles.
-          The robot must generate collision-free trajectories while satisfying
-          its nonholonomic motion constraints and reacting online to obstacle
-          motion.
+          We consider a bicycle-model robot navigating toward a goal in an environment populated with
+          independently maneuvering unicycle obstacles. Unlike obstacles moving at constant velocity,
+          these agents may continuously accelerate, decelerate, or change heading during navigation, 
+          resulting in time-varying interactions with the robot. Consequently, the robot must generate
+          collision-free trajectories while respecting its nonholonomic dynamics and reasoning about
+          the relative position and velocity of nearby obstacles in real time.
         </p>
 
         <br>
-
-        <p>
-          Unlike static environments, each obstacle possesses its own motion,
-          characterized by its position, velocity, and potentially changing
-          heading. As the robot and obstacles move simultaneously, collision
-          avoidance depends not only on their instantaneous separation but also
-          on their relative motion. Consequently, both the relative position
-          and relative velocity between the robot and nearby obstacles must be
-          considered when reasoning about safety.
-        </p>
-
-        <br>
-
-        <p>
-          Throughout this work, the robot interacts with multiple maneuvering
-          obstacles whose future motion cannot be assumed to remain perfectly
-          constant. The objective is to safely navigate to the desired goal
-          while continuously adapting to changes in obstacle motion in
-          real time.
-        </p>
 
       </div>
 
