@@ -245,6 +245,33 @@ pre{
     color:#666;
 }
 
+/* ===================================================== */
+/* Abstract */
+/* ===================================================== */
+
+#abstract{
+
+    background:#fafafa;
+
+}
+
+.abstract-content{
+
+    max-width:900px;
+    margin:0 auto;
+
+    font-size:1.08rem;
+    line-height:1.9;
+    color:#444;
+
+}
+
+.abstract-content p{
+
+    margin-bottom:1.35rem;
+
+}
+
 /* ---------- Responsive ---------- */
 
 @media screen and (max-width:768px){
