@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
     
-<!-- ===================================================== -->
-<!-- MathJax -->
-<!-- ===================================================== -->
-
-<script>
-window.MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$$', '$$'], ['\\[', '\\]']]
-  },
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-
-<script
-id="MathJax-script"
-async
-src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-</script>
-    
 <head>
+    <!-- ===================================================== -->
+    <!-- MathJax -->
+    <!-- ===================================================== -->
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    
+    <script
+    id="MathJax-script"
+    async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
 
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -247,7 +247,7 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
       </div>
 
       <!-- Text -->
-      <!-- <div class="column is-6"> -->
+      <div class="column is-6">
 
         <p class="content is-medium has-text-justified">
           We consider a <span class="highlight">bicycle-model robot</span> navigating
@@ -274,102 +274,180 @@ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
 </section>
 
 <!-- ===================================================== -->
+<!-- THE PROBLEM -->
+<!-- ===================================================== -->
 
-<!-- ===================== The Problem ===================== -->
 <section class="section" id="problem">
+
   <div class="container is-max-desktop">
 
-    <h2 class="title is-3 has-text-centered">The Problem</h2>
+    <!-- Title -->
 
-    <p class="subtitle has-text-centered" style="max-width:900px;margin:0 auto 2rem auto;">
-      Existing <strong>Dynamic Parabolic Control Barrier Functions (DPCBFs)</strong>
-      assume obstacle velocity remains <span class="highlight">constant</span> over
-      the prediction horizon. However, real obstacles may
+    <h2 class="title is-3 has-text-centered">
+      The Problem
+    </h2>
+
+    <!-- Intro -->
+
+    <p class="content is-medium has-text-centered problem-intro">
+
+      Conventional
+      <span class="highlight">Dynamic Parabolic Control Barrier Functions (DPCBFs)</span>
+      guarantee safety only when surrounding obstacles maintain
+      <span class="highlight">constant velocity</span>.
+      In realistic environments, obstacles may
       <span class="highlight">accelerate</span>,
-      <span class="highlight">decelerate</span>, or
+      <span class="highlight">decelerate</span>,
+      or
       <span class="highlight">change their heading</span>,
-      introducing an unmodeled maneuvering effect that silently invalidates the
-      nominal safety certificate.
+      introducing dynamics that invalidate the nominal safety certificate.
+
     </p>
 
-    <!-- Video -->
-    <div class="has-text-centered mb-6">
+
+    <!-- ===================================================== -->
+    <!-- Failure Video -->
+    <!-- ===================================================== -->
+
+    <div class="problem-video-wrapper">
+
       <video
+        class="problem-video"
         controls
         autoplay
         muted
         loop
-        playsinline
-        style="width:100%;max-width:900px;border-radius:12px;
-               box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+        playsinline>
 
-        <source src="static/videos/problem_failure.mp4" type="video/mp4">
-        Your browser does not support the video tag.
+        <source
+          src="static/videos/problem_failure.mp4"
+          type="video/mp4">
 
       </video>
 
-      <p class="is-size-6 has-text-grey mt-3">
+      <p class="figure-caption">
+
         <strong>Failure of conventional DPCBF.</strong>
-        The controller continues to satisfy the nominal barrier constraint,
-        yet the obstacle begins maneuvering, causing the underlying safety
-        guarantee to become invalid.
+        Although the nominal barrier constraint is satisfied, an obstacle
+        begins maneuvering, causing the underlying safety guarantee to become
+        invalid.
+
       </p>
+
     </div>
 
-    <!-- Equation Card -->
-    <div class="box" style="max-width:850px;margin:auto;">
 
-      <h4 class="title is-5 has-text-centered">
-        Why does the safety certificate fail?
-      </h4>
+    <!-- ===================================================== -->
+    <!-- Explanation -->
+    <!-- ===================================================== -->
 
-      <div class="content has-text-centered">
+    <div class="problem-card">
 
-        <p>
-          DPCBF assumes
-        </p>
+      <h3 class="title is-5 has-text-centered">
 
-        <p style="font-size:1.35rem;">
-          $$\dot h = \dot h_{\mathrm{DPCBF}}$$
-        </p>
+        Why does the guarantee fail?
 
-        <p style="margin-top:1rem;">
-          but the true barrier dynamics become
-        </p>
+      </h3>
 
-        <p style="font-size:1.45rem;">
-          $$\dot h_{\mathrm{true}}
-          =
-          \dot h_{\mathrm{DPCBF}}
-          +
-          {\color{#d62728}{\Delta(t)}}$$
-        </p>
+      <p class="content has-text-centered">
 
-        <p style="margin-top:1.5rem;">
-          where the additional maneuvering term is
-        </p>
+        Conventional DPCBF assumes that the obstacle motion model perfectly
+        matches the true dynamics. Once an obstacle starts maneuvering, the
+        actual barrier evolution differs from the nominal prediction by an
+        additional disturbance term.
 
-        <p style="font-size:1.1rem;">
-        $$
-        \Delta(t)=
-        a_{\rm obs}\cos\tilde{\theta}_{\rm obs}
-        +
-        v_{\rm obs}\omega_{\rm obs}
-        \left(
-        2\lambda
-        \dot{\tilde y}_{\rm rel}
-        \cos\tilde{\theta}_{\rm obs}
-        -
-        \sin\tilde{\theta}_{\rm obs}
-        \right).
-        $$
-        </p>
+      </p>
+
+
+      <!-- Equation -->
+
+      <div class="main-equation">
+
+$$
+\dot h
+=
+\dot h_{\rm DPCBF}
+$$
+
+      </div>
+
+
+      <div class="problem-arrow">
+
+        <i class="fas fa-arrow-down"></i>
+
+      </div>
+
+
+      <div class="main-equation">
+
+$$
+\dot h_{\rm true}
+=
+\dot h_{\rm DPCBF}
++
+\color{red}{\Delta(t)}
+$$
+
+      </div>
+
+
+      <p class="content has-text-centered">
+
+        where
+        <span class="highlight">\( \Delta(t) \)</span>
+        captures the obstacle's unknown maneuvering behavior arising from
+        acceleration and turning-rate effects. Because this term is ignored,
+        the nominal barrier certificate can become invalid even though the
+        optimization problem remains feasible.
+
+      </p>
+
+
+      <div class="main-equation">
+
+$$
+\Delta(t)=
+a_{\rm obs}\cos\tilde{\theta}_{\rm obs}
++
+v_{\rm obs}\omega_{\rm obs}
+\left(
+2\lambda
+\dot{\tilde y}_{\rm rel}
+\cos\tilde{\theta}_{\rm obs}
+-
+\sin\tilde{\theta}_{\rm obs}
+\right)
+$$
 
       </div>
 
     </div>
 
+
+    <!-- ===================================================== -->
+    <!-- Transition -->
+    <!-- ===================================================== -->
+
+    <p class="content is-medium has-text-centered problem-transition">
+
+      <strong>
+      The key question is therefore:
+      </strong>
+
+      <br><br>
+
+      <em>
+
+      Can we recover provable safety guarantees when surrounding obstacles
+      are allowed to maneuver within known physical limits?
+
+      </em>
+
+    </p>
+
   </div>
+
 </section>
 
 <!-- ===================================================== -->
