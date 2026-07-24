@@ -1,155 +1,177 @@
-/* --------------------------------------------------
-   General
--------------------------------------------------- */
+/* ==========================================================
+   THE PROBLEM SECTION
+   ========================================================== */
 
-html {
-    scroll-behavior: smooth;
+#problem {
+    padding: 4rem 0;
 }
 
-body {
-    font-family: "Google Sans", "Noto Sans", sans-serif;
-    color: #2c2c2c;
-    background: #ffffff;
-    line-height: 1.7;
-    font-size: 17px;
-}
-
-
-/* --------------------------------------------------
-   Typography
--------------------------------------------------- */
-
-h1,
-h2,
-h3,
-h4,
-h5 {
-    color: #111111;
+#problem .title {
+    margin-bottom: 1rem;
     font-weight: 700;
 }
 
-.title {
-    letter-spacing: -0.02em;
+#problem .subtitle {
+    max-width: 850px;
+    margin: auto;
+    line-height: 1.6;
+    color: #555;
+    font-size: 1.15rem;
 }
 
-.subtitle {
-    color: #666666;
+/* ----------------------------------------------------------
+   Highlighted words
+-----------------------------------------------------------*/
+
+.highlight {
+    color: #d62728;
+    font-weight: 600;
 }
 
+/* ----------------------------------------------------------
+   Video
+-----------------------------------------------------------*/
 
-/* --------------------------------------------------
-   Hero
--------------------------------------------------- */
-
-.hero {
-    padding-top: 4rem;
-    padding-bottom: 2rem;
+.problem-video {
+    margin-top: 2.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
-.hero .title {
-    font-size: 3rem;
-}
-
-.hero .subtitle {
-    margin-top: 0.5rem;
-    font-size: 1.35rem;
-}
-/*--------------------------------------------------
-   Highlight
-----------------------------------------------------*/
-.highlight{
-    color:#d62728;
-    font-weight:600;
-}
-
-#problem .box{
-    border-radius:12px;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-}
-
-#problem video{
-    transition:transform .25s ease;
-}
-
-#problem video:hover{
-    transform:scale(1.01);
-}
-
-/* --------------------------------------------------
-   Sections
--------------------------------------------------- */
-
-.section {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-}
-
-
-/* --------------------------------------------------
-   Images
--------------------------------------------------- */
-
-img {
-    border-radius: 10px;
-    max-width: 100%;
-}
-
-
-/* --------------------------------------------------
-   Videos
--------------------------------------------------- */
-
-video {
+.problem-video video {
     width: 100%;
-    border-radius: 12px;
+    max-width: 900px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.15);
+
+    transition: transform .3s ease;
 }
 
-
-/* --------------------------------------------------
-   Buttons
--------------------------------------------------- */
-
-.button {
-
-    transition: all 0.25s ease;
-
-    border-radius: 999px;
-
-    padding-left: 1.4rem;
-
-    padding-right: 1.4rem;
+.problem-video video:hover {
+    transform: scale(1.01);
 }
 
-.button:hover {
+.problem-caption {
+    max-width: 850px;
+    margin: 1rem auto 2.5rem auto;
 
-    transform: translateY(-2px);
-
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
+/* ----------------------------------------------------------
+   Equation Card
+-----------------------------------------------------------*/
 
-/* --------------------------------------------------
-   Code
--------------------------------------------------- */
+.problem-card {
 
-pre {
+    max-width: 760px;
 
-    border-radius: 10px;
+    margin: auto;
 
-    padding: 1rem;
+    background: #ffffff;
 
+    border-radius: 14px;
+
+    padding: 2rem 2.5rem;
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,.08);
+
+    border: 1px solid #eeeeee;
 }
 
+.problem-card h3 {
 
-/* --------------------------------------------------
-   Footer
--------------------------------------------------- */
+    margin-bottom: 1.5rem;
 
-.footer {
+    text-align: center;
 
-    background: white;
+    font-weight: 700;
+}
 
-    border-top: 1px solid #eeeeee;
+.problem-card p {
 
-    padding: 2rem;
+    text-align: center;
+
+    color: #555;
+
+    margin-bottom: 0.8rem;
+}
+
+/* ----------------------------------------------------------
+   Arrow between equations
+-----------------------------------------------------------*/
+
+.problem-arrow {
+
+    font-size: 2rem;
+
+    color: #999;
+
+    text-align: center;
+
+    margin: 0.5rem 0;
+}
+
+/* ----------------------------------------------------------
+   MathJax equations
+-----------------------------------------------------------*/
+
+.problem-card mjx-container {
+
+    margin: 0.6rem auto !important;
+
+    font-size: 122% !important;
+}
+
+.problem-card .main-equation {
+
+    font-size: 1.45rem;
+
+    margin: 0.8rem 0;
+}
+
+.problem-card .delta-description {
+
+    margin-top: 1rem;
+
+    font-size: 0.98rem;
+
+    color: #666;
+}
+
+.problem-card .delta-term {
+
+    color: #d62728;
+
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   Responsive
+-----------------------------------------------------------*/
+
+@media screen and (max-width: 768px) {
+
+    #problem {
+        padding: 3rem 1rem;
+    }
+
+    #problem .subtitle {
+        font-size: 1rem;
+    }
+
+    .problem-card {
+        padding: 1.6rem;
+    }
+
+    .problem-card mjx-container {
+        font-size: 108% !important;
+    }
 
 }
