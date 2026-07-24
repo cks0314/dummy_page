@@ -451,16 +451,194 @@ $$
 </section>
 
 <!-- ===================================================== -->
-<!-- THEORY -->
+<!-- KEY INSIGHT -->
 <!-- ===================================================== -->
 
-<section class="section" id="theory">
+<section class="section" id="insight">
 
     <div class="container is-max-desktop">
 
+        <!-- ===================================================== -->
+        <!-- Title -->
+        <!-- ===================================================== -->
+
         <h2 class="title is-3 has-text-centered">
-            Theoretical Guarantees
+            Key Insight
         </h2>
+
+        <p class="subtitle has-text-centered insight-subtitle">
+
+            Instead of assuming obstacles move with constant velocity,
+            <span class="highlight">AR-DPCBF models obstacle maneuverability explicitly</span>
+            and analytically reserves the safety margin required to remain
+            collision-free under worst-case bounded maneuvers.
+
+        </p>
+
+
+        <!-- ===================================================== -->
+        <!-- Animation -->
+        <!-- ===================================================== -->
+
+        <div class="has-text-centered">
+
+            <img
+                src="static/images/variation.gif"
+                alt="Adaptive contraction of AR-DPCBF"
+                class="insight-animation">
+
+            <p class="figure-caption">
+
+                <strong>Adaptive contraction of the safety boundary.</strong>
+                As the obstacle maneuverability
+                <span class="highlight">$\kappa$</span>
+                increases, the conventional DPCBF unsafe set (orange) is
+                conservatively contracted to produce the AR-DPCBF unsafe set
+                (green). Simultaneously, the admissible relative-velocity
+                boundary contracts in velocity space, reserving sufficient
+                safety margin to compensate for worst-case obstacle maneuvers.
+
+            </p>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- Explanation -->
+        <!-- ===================================================== -->
+
+        <div class="content is-medium mt-6">
+
+            <p>
+
+                The fundamental limitation of conventional DPCBF is that it
+                certifies safety only for the
+                <span class="highlight">nominal obstacle motion model</span>.
+                Once an obstacle accelerates or changes its heading, the true
+                barrier dynamics deviate from the nominal prediction,
+                invalidating the safety certificate.
+
+            </p>
+
+            <p>
+
+                AR-DPCBF addresses this limitation by treating each obstacle as
+                a <span class="highlight">bounded adversary</span> whose
+                acceleration and turning rate are constrained by known physical
+                capability limits. Rather than reacting after the maneuver
+                occurs, the controller explicitly accounts for the
+                <em>worst-case admissible maneuver</em> during barrier
+                construction.
+
+            </p>
+
+            <p>
+
+                The animation above illustrates this principle geometrically.
+                As the maneuverability bound
+                <span class="highlight">$\kappa$</span>
+                increases, the controller analytically reserves a larger
+                fraction of the available safety margin by contracting both the
+                physical unsafe set and the admissible relative-velocity
+                boundary. Larger maneuvering capability therefore results in a
+                more conservative—but provably valid—safety certificate.
+
+            </p>
+
+            <p>
+
+                Importantly, this contraction is
+                <span class="highlight">not a heuristic safety buffer</span>.
+                The contracted barrier parameters are derived directly from the
+                obstacle capability bounds, yielding the minimum contraction
+                required to guarantee safety under all admissible maneuvers
+                while avoiding unnecessary conservatism.
+
+            </p>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- Three Key Ideas -->
+        <!-- ===================================================== -->
+
+        <div class="columns is-variable is-5 mt-6">
+
+            <div class="column">
+
+                <div class="box insight-box">
+
+                    <h4 class="title is-5">
+
+                        <i class="fas fa-person-running"></i>
+                        Bounded Adversary
+
+                    </h4>
+
+                    <p>
+
+                        Obstacles are modeled as bounded adversaries whose
+                        acceleration and turning rate are limited by known
+                        physical capabilities instead of assuming constant
+                        velocity.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="column">
+
+                <div class="box insight-box">
+
+                    <h4 class="title is-5">
+
+                        <i class="fas fa-shield-halved"></i>
+                        Analytical Safety Margin
+
+                    </h4>
+
+                    <p>
+
+                        The barrier contracts analytically as maneuverability
+                        increases, reserving exactly the safety margin required
+                        to compensate for worst-case obstacle maneuvers.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="column">
+
+                <div class="box insight-box">
+
+                    <h4 class="title is-5">
+
+                        <i class="fas fa-check-circle"></i>
+                        Provable Robustness
+
+                    </h4>
+
+                    <p>
+
+                        The resulting safety certificate remains valid under
+                        every obstacle maneuver that satisfies the assumed
+                        capability bounds, recovering formal guarantees that
+                        conventional DPCBF cannot provide.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
