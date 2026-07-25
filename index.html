@@ -150,7 +150,7 @@
                 </div>
             </div>
 
-            <iframe src="static/interactive/motivation.html" class="interactive-frame" loading="lazy"></iframe>
+            <iframe src="static/interactive/motivation.html" class="interactive-frame" scrolling="no" style="overflow: hidden;" loading="lazy"></iframe>
 
             <p class="figure-caption mt-3">
                 <strong>Interactive illustration of the failure mechanism.</strong> Adjust obstacle acceleration <span class="highlight">$a_{\rm obs}$</span> and turning rate <span class="highlight">$\omega_{\rm obs}$</span> to observe how the disturbance $\Delta(t)$ causes the true barrier dynamics to deviate from nominal predictions.
@@ -195,7 +195,7 @@
                 </div>
             </div>
 
-            <iframe src="static/interactive/ar_dpcbf_variation_embed.html" class="interactive-frame frame-large" loading="lazy"></iframe>
+            <iframe src="static/interactive/ar_dpcbf_variation_embed.html" class="interactive-frame frame-large" scrolling="no" style="overflow: hidden;" loading="lazy"></iframe>
 
             <p class="figure-caption mt-3">
                 <strong>Interactive AR-DPCBF visualization.</strong> Adjust capability $\kappa$, relative speed $||\tilde{\mathbf v}_{rel}||$, distance $d$, and heading $\theta$ to observe how bounded maneuverability contracts both safe sets.
@@ -287,6 +287,30 @@
         © 2026 Chandan Kumar Sah
     </div>
 </footer>
+
+<!-- Automatic Iframe Height Resizer Script -->
+<script>
+    function autoResizeIframe(iframe) {
+        try {
+            iframe.style.height = '0px';
+            const doc = iframe.contentWindow.document;
+            const bodyHeight = doc.body.scrollHeight;
+            const htmlHeight = doc.documentElement.scrollHeight;
+            const newHeight = Math.max(bodyHeight, htmlHeight);
+            iframe.style.height = (newHeight + 15) + 'px';
+        } catch (e) {
+            console.warn('Iframe auto-resize fallback active');
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const iframes = document.querySelectorAll('.interactive-frame');
+        iframes.forEach(iframe => {
+            iframe.addEventListener('load', () => autoResizeIframe(iframe));
+            window.addEventListener('resize', () => autoResizeIframe(iframe));
+        });
+    });
+</script>
 
 </body>
 </html>
