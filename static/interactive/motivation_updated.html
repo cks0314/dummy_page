@@ -1,562 +1,1141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>DPCBF Embedded Visualization Widget</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Fundamental Gap — AR-DPCBF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });"
+></script>
+
 <style>
-/* Reset & Light Compact Embedded Tokens */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  :root {
+    --bg: #ffffff; /* Page background */
+    --panel: #eef2ff; /* Light Indigo */
+    --border: #e0e7ff; /* Light Indigo border */
+    --border-strong: #c7d2fe; /* Light Indigo strong border */
+    --ink: #1e1b4b; /* Indigo-tinted dark text */
+    --sub: #4338ca;
+    --faint: #818cf8;
 
-:root {
-  --panel-bg: #FFFFFF;
-  --panel-border: #E2E8F0;
-  --text-main: #0F172A;
-  --text-muted: #64748B;
-  
-  /* Color Accents */
-  --k-accent: #EF4444;
-  --v-accent: #3B82F6;
-  --d-accent: #0D9488;
-  --a-accent: #8B5CF6;
-}
+    --orange: #e07b24;
+    --green: #2e9e5b;
+    --eq-red: #c0392b; /* Updated to red */
+    --red: #c0392b;
+    --red-wash: #f6c6c0;
+    --green-wash: #dcf1e4;
+    --blue: #2563eb;
+    --ghost: #a4a9b1;
+    --gold: #c79a00;
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden; /* Compact widget container without internal page scrolling */
-  background: transparent;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: var(--text-main);
-}
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 
-.widget-card {
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  max-width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+    --shadow-sm: 0 1px 2px rgba(30, 27, 75, 0.04);
+    --shadow: 0 1px 2px rgba(30, 27, 75, 0.05), 0 6px 20px rgba(30, 27, 75, 0.045);
+  }
 
-/* Compact Grid Layout for Plots */
-.plots {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
-  flex-grow: 1;
-}
+  * { box-sizing: border-box; }
 
-.pw {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
 
-.pt {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 30px 22px 40px; }
 
-.pt span {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
+  .accent-bar {
+    height: 3px;
+    width: 56px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    background: linear-gradient(to right, var(--blue) 0%, var(--red) 52%, var(--green) 100%);
+  }
 
-canvas {
-  display: block;
-  width: 100%;
-  height: 320px;
-  border-radius: 10px;
-  border: 1px solid var(--panel-border);
-  background: #F8FAFC;
-}
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 7px;
+  }
 
-/* Compact Legend */
-.leg {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 12px 20px;
-  padding-top: 12px;
-  margin-top: 12px;
-  border-top: 1px solid var(--panel-border);
-}
+  h2.title {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(21px, 2.7vw, 27px);
+    line-height: 1.16;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
 
-.li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
+  p.intro {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.6;
+    color: #1e293b;
+    max-width: 800px;
+    margin: 0 0 20px;
+  }
 
-.lsw { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid; }
-.lln { width: 18px; height: 3px; border-radius: 2px; }
+  /* Equation Highlighting Styles (Red Text, Clean Background) */
+  p.intro .katex-display {
+    margin: 0.8em 0;
+    padding: 4px 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--eq-red); /* Highlight equations in red */
+  }
 
-/* Status Bar & Controls Header */
-.controls-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--panel-border);
-}
+  p.intro .katex {
+    background: transparent;
+    padding: 0;
+    border: none;
+    color: var(--eq-red); /* Highlight equations in red */
+  }
 
-.controls-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-}
+  /* ---------------- console (controls) ---------------- */
 
-.status-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: #F1F5F9;
-  border: 1px solid var(--panel-border);
-}
+  .console {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 16px 22px;
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.9fr 1fr;
+    gap: 0 26px;
+    align-items: start;
+  }
+  .console > div { padding-top: 2px; }
+  .console > div:not(:first-child) {
+    border-left: 1px solid var(--border);
+    padding-left: 26px;
+  }
+  @media (max-width: 980px) {
+    .console { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+    .console > div:nth-child(3) { border-left: none; padding-left: 0; }
+  }
+  @media (max-width: 560px) {
+    .console { grid-template-columns: 1fr; }
+    .console > div:not(:first-child) { border-left: none; padding-left: 0; }
+  }
 
-.status-title { font-size: 11px; font-weight: 700; color: var(--text-main); }
+  .field-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+  .field-label label { font-weight: 600; font-size: 12.5px; color: var(--ink); }
+  .field-label .unit { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .field-label .val { font-family: var(--mono); font-weight: 600; font-size: 13.5px; }
 
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
-}
+  /* ---- custom slider ---- */
+  .slider-track-wrap { position: relative; padding: 14px 0 2px; }
 
-/* Grid Layout for Interactive Sliders */
-.sls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
+  input[type="range"] {
+    width: 100%;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 3px;
+    outline: none;
+    display: block;
+    position: relative;
+    z-index: 2;
+    background: var(--border-strong);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 1px 3px rgba(30, 27, 75, 0.25);
+    cursor: pointer;
+    margin-top: -5.5px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+    box-shadow: 0 2px 6px rgba(30, 27, 75, 0.32);
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 3px;
+    background: transparent;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 1px 3px rgba(30, 27, 75, 0.25);
+    cursor: pointer;
+    transition: transform 0.12s ease;
+  }
+  input[type="range"]:active::-moz-range-thumb { transform: scale(1.15); }
+  input[type="range"]::-moz-range-track { height: 4px; border-radius: 3px; background: transparent; }
+  input[type="range"]:focus-visible { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25); border-radius: 3px; }
 
-.sb {
-  border-radius: 10px;
-  padding: 10px 12px;
-  background: #F8FAFC;
-  border: 1px solid var(--panel-border);
-  transition: border-color 0.2s ease;
-}
+  .zero-tick {
+    position: absolute;
+    top: 14px;
+    width: 1.5px;
+    height: 4px;
+    background: rgba(30, 27, 75, 0.32);
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 1;
+  }
 
-.sb:hover {
-  border-color: #CBD5E1;
-}
+  .value-bubble {
+    position: absolute;
+    top: -6px;
+    transform: translate(-50%, -100%) scale(0.85);
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 3;
+  }
+  .value-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .value-bubble.show { opacity: 1; transform: translate(-50%, -100%) scale(1); }
 
-.sbt {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
+  .scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--faint);
+    margin-top: 2px;
+  }
 
-.sbl {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
+  .playback { display: flex; flex-direction: column; gap: 7px; }
+  .row2 { display: flex; gap: 7px; }
+  button.ctl {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid var(--border-strong);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 6px;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: background 0.12s ease, transform 0.06s ease;
+  }
+  button.ctl:hover { background: #e0e7ff; }
+  button.ctl:active { transform: scale(0.97); }
+  button.ctl.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  button.ctl.primary:hover { background: #312e81; }
 
-.sbv {
-  font-size: 15px;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-}
+  .timeLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--sub);
+    display: flex;
+    justify-content: space-between;
+  }
+  #timeScrub { margin: 8px 0 2px; }
 
-.sbu {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin-left: 2px;
-}
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+  }
+  .status-badge.ok { background: var(--green-wash); color: #1c6b3f; }
+  .status-badge.fail { background: var(--red-wash); color: #8a2418; }
+  .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-/* Color Accents */
-.sb.k .sbv { color: var(--k-accent); }
-.sb.v .sbv { color: var(--v-accent); }
-.sb.d .sbv { color: var(--d-accent); }
-.sb.a .sbv { color: var(--a-accent); }
+  .delta-block { display: flex; flex-direction: column; gap: 1px; }
+  .delta-num {
+    font-family: var(--mono);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-top: 2px;
+    transition: color 0.15s ease;
+  }
+  .delta-num.neg { color: var(--red); }
+  .delta-num.pos { color: var(--green); }
+  .delta-caption { font-family: var(--sans); font-size: 11px; color: var(--sub); line-height: 1.35; }
 
-/* Range Inputs */
-input[type=range] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 5px;
-  border-radius: 3px;
-  outline: none;
-  cursor: pointer;
-}
+  /* ---------------- panels / canvases ---------------- */
 
-.sb.k input { background: linear-gradient(to right, var(--k-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-.sb.v input { background: linear-gradient(to right, var(--v-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-.sb.d input { background: linear-gradient(to right, var(--d-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-.sb.a input { background: linear-gradient(to right, var(--a-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
+  .panels { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; }
+  @media (max-width: 900px) { .panels { grid-template-columns: 1fr; } }
 
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid #FFFFFF;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  cursor: pointer;
-}
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .panel-head h3 { font-family: var(--serif); font-size: 13.5px; font-weight: 700; margin: 0; }
+  .panel-head span { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+  .canvas-wrap { position: relative; width: 100%; aspect-ratio: 16 / 11.5; background: #fff; }
+  canvas { display: block; width: 100%; height: 100%; }
 
-.sb.k input::-webkit-slider-thumb { background: var(--k-accent); }
-.sb.v input::-webkit-slider-thumb { background: var(--v-accent); }
-.sb.d input::-webkit-slider-thumb { background: var(--d-accent); }
-.sb.a input::-webkit-slider-thumb { background: var(--a-accent); }
+  .legend { padding: 7px 14px 11px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .legend .item {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--sans); font-size: 11px; color: var(--sub);
+  }
+  .legend .swatch { width: 12px; height: 3px; border-radius: 2px; flex: none; }
+  .legend .swatch.dot { width: 8px; height: 8px; border-radius: 50%; }
 </style>
 </head>
+
 <body>
+<div class="wrap">
 
-<div class="widget-card">
-  <div class="plots">
-    <div class="pw">
-      <div class="pt">(A) Physical Space <span>DPCBF Assumed Geometry</span></div>
-      <canvas id="cp"></canvas>
+  <div class="accent-bar"></div>
+  <div class="eyebrow">The Fundamental Gap</div>
+  <h2 class="title">DPCBF assumes the obstacle never maneuvers</h2>
+  <p class="intro">
+    Its safety-critical Lie derivative $L_f h$ evaluates $\dot x_{obs}$ as
+    $v_{obs}[\cos\theta_{obs}, \sin\theta_{obs}]^\top$ &mdash; the current velocity, extended
+    forever. When the obstacle really has acceleration $a_{obs}$ and turning rate $\omega_{obs}$,
+    the true rate differs by
+    $$
+    \Delta(t) = a_{obs}\cos\tilde\theta_{obs} \;+\; v_{obs}\,\omega_{obs}
+    \Big[\,2\lambda\,\tilde v_{rel,y}\cos\tilde\theta_{obs} \;-\; \sin\tilde\theta_{obs}\,\Big],
+    \qquad \tilde\theta_{obs} = \theta_{obs} - \alpha .
+    $$
+    Whenever $\Delta(t) < 0$, the QP's constraint $L_f h + L_g h\,u \ge -\alpha(h)$ can hold on
+    paper while the true barrier is already violated &mdash; the safety guarantee fails silently.
+    Choose a maneuver below and watch the gap open.
+  </p>
+
+  <div class="console">
+    <div>
+      <div class="field-label">
+        <label for="sliderA">Acceleration <span class="unit">a<sub>obs</sub></span></label>
+        <span class="val" id="valA">0.35</span>
+      </div>
+      <div class="slider-track-wrap" id="wrapA">
+        <span class="zero-tick" id="tickA"></span>
+        <span class="value-bubble" id="bubbleA">0.35</span>
+        <input type="range" id="sliderA" min="-0.5" max="0.5" step="0.01" value="0.35" />
+      </div>
+      <div class="scale"><span>&minus;0.5</span><span>0</span><span>+0.5 m/s&sup2;</span></div>
     </div>
-    <div class="pw">
-      <div class="pt">(B) Velocity Space <span>Un-robust Barrier Boundary</span></div>
-      <canvas id="cv"></canvas>
+
+    <div>
+      <div class="field-label">
+        <label for="sliderW">Turning rate <span class="unit">&omega;<sub>obs</sub></span></label>
+        <span class="val" id="valW">&minus;0.50</span>
+      </div>
+      <div class="slider-track-wrap" id="wrapW">
+        <span class="zero-tick" id="tickW"></span>
+        <span class="value-bubble" id="bubbleW">&minus;0.50</span>
+        <input type="range" id="sliderW" min="-0.6" max="0.6" step="0.01" value="-0.5" />
+      </div>
+      <div class="scale"><span>&minus;0.6</span><span>0</span><span>+0.6 rad/s</span></div>
+    </div>
+
+    <div class="playback">
+      <div id="statusBadge" class="status-badge ok"><span class="dot"></span><span id="statusText">certificate holds</span></div>
+      <div class="row2">
+        <button class="ctl primary" id="btnPlay">&#10074;&#10074;&nbsp; Pause</button>
+        <button class="ctl" id="btnDpcbf">DPCBF</button>
+      </div>
+      <input type="range" id="timeScrub" min="0" max="1000" step="1" value="0" />
+      <div class="timeLabel"><span>t = <span id="timeNow">0.00</span> s</span><span>0&ndash;14 s</span></div>
+    </div>
+
+    <div class="delta-block">
+      <div class="field-label"><label>Fundamental gap &Delta;(t)</label></div>
+      <div class="delta-num" id="deltaNum">&minus;0.48</div>
+      <div class="delta-caption" id="deltaCaption">true barrier falling faster than DPCBF assumes</div>
     </div>
   </div>
 
-  <div class="leg">
-    <div class="li"><div class="lsw" style="background:rgba(217,119,6,0.15); border-color:#D97706;"></div>DPCBF Unsafe Region</div>
-    <div class="li"><div class="lln" style="background:#D97706;"></div>DPCBF Nominal Boundary</div>
-    <div class="li"><div style="width:10px;height:10px;background:#8B5E3C;border:1px solid #5C4033;"></div>Robot</div>
-    <div class="li"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444;border:1px solid #991B1B;"></div>Obstacle</div>
-    <div class="li"><div style="width:8px;height:8px;background:#A855F7;transform:rotate(45deg);"></div>Current v_rel</div>
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-head"><h3>Barrier value over time</h3><span>h(x(t))</span></div>
+      <div class="canvas-wrap"><canvas id="chartCanvas"></canvas></div>
+      <div class="legend">
+        <div class="item"><span class="swatch" style="background:var(--ghost)"></span>DPCBF assumes</div>
+        <div class="item"><span class="swatch" style="background:var(--green)"></span>true, safe</div>
+        <div class="item"><span class="swatch" style="background:var(--red)"></span>true, violated</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>Cartesian space</h3><span>x&ndash;y, meters</span></div>
+      <div class="canvas-wrap"><canvas id="sceneCanvas"></canvas></div>
+      <div class="legend">
+        <div class="item"><span class="swatch dot" style="background:var(--blue)"></span>robot</div>
+        <div class="item"><span class="swatch dot" style="background:var(--ghost)"></span>assumed obstacle</div>
+        <div class="item"><span class="swatch dot" style="background:var(--orange)"></span>actual obstacle</div>
+        <div class="item"><span class="swatch dot" style="background:var(--red)"></span>unsafe set</div>
+      </div>
+    </div>
   </div>
 
-  <div class="controls-header">
-    <div class="controls-title">Nominal DPCBF Parameters</div>
-    <div class="status-card" id="statusCard">
-      <div class="status-title">Nominal Status</div>
-      <div class="status-pill" id="statusPill">🟢 SAFE • Margin +0.00</div>
-    </div>
-  </div>
-
-  <div class="sls">
-    <div class="sb k">
-      <div class="sbt">
-        <span class="sbl">Obstacle Maneuver κ</span>
-        <div><span class="sbv" id="vk">1.42</span><span class="sbu">m/s²</span></div>
-      </div>
-      <input id="sk" max="3.5" min="0" step="0.02" type="range" value="1.42"/>
-    </div>
-
-    <div class="sb v">
-      <div class="sbt">
-        <span class="sbl">Relative Speed ‖v_rel‖</span>
-        <div><span class="sbv" id="vv">1.20</span><span class="sbu">m/s</span></div>
-      </div>
-      <input id="sv" max="3.5" min="0.3" step="0.02" type="range" value="1.20"/>
-    </div>
-
-    <div class="sb d">
-      <div class="sbt">
-        <span class="sbl">Separation Distance d</span>
-        <div><span class="sbv" id="vd">2.00</span><span class="sbu">m</span></div>
-      </div>
-      <input id="sd" max="5.0" min="0.3" step="0.02" type="range" value="2.00"/>
-    </div>
-
-    <div class="sb a">
-      <div class="sbt">
-        <span class="sbl">Relative Direction θ</span>
-        <div><span class="sbv" id="va">132</span><span class="sbu">°</span></div>
-      </div>
-      <input id="sa" max="180" min="-180" step="1" type="range" value="132"/>
-    </div>
-  </div>
 </div>
 
 <script>
-// Canvas Rendering Logic optimized for non-AR DPCBF Nominal Evaluation
-const KL=0.144, KM=0.505, RS=0.8;
-const DPR = Math.min(window.devicePixelRatio||1, 2);
+/* =====================================================================
+   1. Physics / barrier math
+   ===================================================================== */
+const K_LAMBDA = 0.144;
+const K_MU = 0.505;
+const R_SAFE = 1.0;
+const V_OBS_MAX = 3.0;
 
-let theta=132;
-const PH={xmin:-1.5, xmax:7.0, ymin:-3.8, ymax:3.8};
-const VL={xmin:-5.5, xmax:2.2, ymin:-3.5, ymax:3.5};
+const SCENARIO = {
+  pRob0: { x: 0, y: 0 },
+  vRob: 1.6,
+  thRob: 0.0,
+  pObs0: { x: 12, y: 4 },
+  vObs0: 1.0,
+  thObs0: (-70 * Math.PI) / 180,
+  T: 14.0,
+  dt: 0.01,
+};
+const ROB_GOAL = {
+  x: SCENARIO.pRob0.x + SCENARIO.vRob * SCENARIO.T * Math.cos(SCENARIO.thRob),
+  y: SCENARIO.pRob0.y + SCENARIO.vRob * SCENARIO.T * Math.sin(SCENARIO.thRob),
+};
 
-const elCP=document.getElementById('cp'), elCV=document.getElementById('cv');
-
-function setupC(c){
-  const w=c.parentElement.clientWidth; 
-  const h=300;
-  c.style.width=w+'px'; 
-  c.style.height=h+'px'; 
-  c.width=w*DPR; 
-  c.height=h*DPR;
+function makeTimeArray(T, dt) {
+  const n = Math.round(T / dt);
+  const t = new Float64Array(n);
+  for (let i = 0; i < n; i++) t[i] = i * dt;
+  return t;
 }
-setupC(elCP); setupC(elCV);
 
-function mkT(ax,W,H,PL,PR,PT,PB){
-  const pw=W-PL-PR, ph=H-PT-PB;
-  return{x:v=>PL+(v-ax.xmin)/(ax.xmax-ax.xmin)*pw,
-         y:v=>PT+(1-(v-ax.ymin)/(ax.ymax-ax.ymin))*ph, pw, ph};
+function simulateObstacle(aObs, wObs) {
+  const { pObs0, vObs0, thObs0, T, dt } = SCENARIO;
+  const n = Math.round(T / dt);
+  const pos = new Array(n);
+  const vel = new Array(n);
+  const th = new Float64Array(n);
+  const v = new Float64Array(n);
+
+  pos[0] = { x: pObs0.x, y: pObs0.y };
+  th[0] = thObs0;
+  v[0] = vObs0;
+  vel[0] = { x: v[0] * Math.cos(th[0]), y: v[0] * Math.sin(th[0]) };
+
+  for (let i = 1; i < n; i++) {
+    let vi = v[i - 1] + aObs * dt;
+    if (vi < 0) vi = 0;
+    if (vi > V_OBS_MAX) vi = V_OBS_MAX;
+    const thi = th[i - 1] + wObs * dt;
+    v[i] = vi;
+    th[i] = thi;
+    vel[i] = { x: vi * Math.cos(thi), y: vi * Math.sin(thi) };
+    pos[i] = { x: pos[i - 1].x + vel[i].x * dt, y: pos[i - 1].y + vel[i].y * dt };
+  }
+  return { pos, vel, th, v };
 }
 
-function buildField(kappa, vrel, d_slider){
-  const obs_x = Math.sqrt(d_slider*d_slider + RS*RS);
-  const th=theta*Math.PI/180;
-  const VDX=Math.cos(th), VDY=Math.sin(th);
-  const vrx=VDX*vrel, vry=VDY*vrel;
+function simulateRobot() {
+  const { pRob0, vRob, thRob, T, dt } = SCENARIO;
+  const n = Math.round(T / dt);
+  const pos = new Array(n);
+  const velVec = { x: vRob * Math.cos(thRob), y: vRob * Math.sin(thRob) };
+  for (let i = 0; i < n; i++) {
+    const t = i * dt;
+    pos[i] = { x: pRob0.x + velVec.x * t, y: pRob0.y + velVec.y * t };
+  }
+  return { pos, velVec };
+}
 
-  const NX=200, NY=200;
-  const hDP = new Float32Array(NX*NY);
-  const dxf=(PH.xmax-PH.xmin)/(NX-1), dyf=(PH.ymax-PH.ymin)/(NY-1);
+function computeBarrier(posObs, velObs, posRob, velRobVec) {
+  const n = posObs.length;
+  const h = new Float64Array(n);
+  const dist = new Float64Array(n);
+  const lam = new Float64Array(n);
+  const alpha = new Float64Array(n);
+  const vtx = new Float64Array(n);
+  const vty = new Float64Array(n);
 
-  for(let j=0;j<NY;j++){
-    const ry=PH.ymin+j*dyf;
-    for(let i=0;i<NX;i++){
-      const rx=PH.xmin+i*dxf;
-      const px=obs_x-rx, py=0-ry;
-      const dist2=px*px+py*py;
+  for (let i = 0; i < n; i++) {
+    const vR = velRobVec;
+    const relX = posObs[i].x - posRob[i].x;
+    const relY = posObs[i].y - posRob[i].y;
+    const dd = Math.hypot(relX, relY);
+    dist[i] = dd;
+    const dClear = Math.sqrt(Math.max(dd * dd - R_SAFE * R_SAFE, 1e-6));
 
-      if(dist2 <= RS*RS){
-        hDP[j*NX+i] = -1;
-        continue;
-      }
+    const a = Math.atan2(relY, relX);
+    alpha[i] = a;
+    const ca = Math.cos(a), sa = Math.sin(a);
 
-      const dg = Math.sqrt(dist2 - RS*RS);
-      const alp = Math.atan2(py, px);
-      const ca=Math.cos(alp), sa=Math.sin(alp);
-      const vtx = ca*vrx + sa*vry;
-      const vty = -sa*vrx + ca*vry;
-      const lam = KL*dg/vrel;
-      const mu  = KM*dg;
+    const vrelX = velObs[i].x - vR.x;
+    const vrelY = velObs[i].y - vR.y;
+    const vtxi = ca * vrelX + sa * vrelY;
+    const vtyi = -sa * vrelX + ca * vrelY;
+    vtx[i] = vtxi;
+    vty[i] = vtyi;
 
-      // Standard non-adversarial DPCBF Formulation
-      hDP[j*NX+i] = vtx + lam*vty*vty + mu;
+    const vnorm = Math.max(Math.hypot(vrelX, vrelY), 0.08);
+    const lami = (K_LAMBDA * dClear) / vnorm;
+    lam[i] = lami;
+    const mui = K_MU * dClear;
+
+    h[i] = vtxi + lami * vtyi * vtyi + mui;
+  }
+  return { h, dist, lam, alpha, vtx, vty };
+}
+
+function computeDelta(aObs, wObs, thObsArr, vObsArr, barrierB, freezeIdx) {
+  const n = thObsArr.length;
+  const delta = new Float64Array(n);
+  const stop = freezeIdx === null ? n : freezeIdx + 1;
+  for (let i = 0; i < stop; i++) {
+    const tt = thObsArr[i] - barrierB.alpha[i];
+    const ct = Math.cos(tt), st = Math.sin(tt);
+    delta[i] = aObs * ct + vObsArr[i] * wObs * (2 * barrierB.lam[i] * barrierB.vty[i] * ct - st);
+  }
+  return delta;
+}
+
+function simulateAll(aObs, wObs) {
+  const t = makeTimeArray(SCENARIO.T, SCENARIO.dt);
+  const rob = simulateRobot();
+  const obsA = simulateObstacle(0.0, 0.0); // DPCBF's assumed world: no maneuver
+  const obsBRaw = simulateObstacle(aObs, wObs); // true world
+
+  const barA = computeBarrier(obsA.pos, obsA.vel, rob.pos, rob.velVec);
+  const barB = computeBarrier(obsBRaw.pos, obsBRaw.vel, rob.pos, rob.velVec);
+
+  // first physical collision (real robot vs real obstacle)
+  let cIdx = null;
+  for (let i = 0; i < t.length; i++) {
+    if (barB.dist[i] < R_SAFE) { cIdx = i; break; }
+  }
+
+  let robPosVisual = rob.pos, obsBPosVisual = obsBRaw.pos;
+  if (cIdx !== null) {
+    // hold the barrier readout constant post-impact (nothing is moving anymore)
+    for (let i = cIdx + 1; i < t.length; i++) {
+      barB.h[i] = barB.h[cIdx];
+      barB.dist[i] = barB.dist[cIdx];
+      barB.lam[i] = barB.lam[cIdx];
+      barB.alpha[i] = barB.alpha[cIdx];
+      barB.vtx[i] = barB.vtx[cIdx];
+      barB.vty[i] = barB.vty[cIdx];
+    }
+    // and freeze the visual positions of both bodies from the moment of impact
+    robPosVisual = rob.pos.slice();
+    obsBPosVisual = obsBRaw.pos.slice();
+    for (let i = cIdx + 1; i < t.length; i++) {
+      robPosVisual[i] = robPosVisual[cIdx];
+      obsBPosVisual[i] = obsBPosVisual[cIdx];
     }
   }
-  return {hDP, NX, NY, dxf, dyf, obs_x, vrx, vry};
+
+  const delta = computeDelta(aObs, wObs, obsBRaw.th, obsBRaw.v, barB, cIdx);
+
+  return {
+    t,
+    rob: { pos: robPosVisual, velVec: rob.velVec },
+    obsA,
+    obsB: { pos: obsBPosVisual, vel: obsBRaw.vel },
+    barA, barB, delta, cIdx,
+  };
 }
 
-function march(field, NX, NY){
-  const segs=[];
-  const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
-  for(let j=0;j<NY-1;j++)for(let i=0;i<NX-1;i++){
-    const v00=field[j*NX+i], v10=field[j*NX+i+1];
-    const v01=field[(j+1)*NX+i], v11=field[(j+1)*NX+i+1];
-    const pts=[];
-    const ip=(a,b,xa,ya,xb,yb)=>{
-      const t=a/(a-b);
-      pts.push([xa+t*(xb-xa), ya+t*(yb-ya)]);
-    };
-    if((v00>=0)!=(v10>=0)) ip(v00,v10, PH.xmin+i*dx,PH.ymin+j*dy, PH.xmin+(i+1)*dx,PH.ymin+j*dy);
-    if((v10>=0)!=(v11>=0)) ip(v10,v11, PH.xmin+(i+1)*dx,PH.ymin+j*dy, PH.xmin+(i+1)*dx,PH.ymin+(j+1)*dy);
-    if((v01>=0)!=(v11>=0)) ip(v01,v11, PH.xmin+i*dx,PH.ymin+(j+1)*dy, PH.xmin+(i+1)*dx,PH.ymin+(j+1)*dy);
-    if((v00>=0)!=(v01>=0)) ip(v00,v01, PH.xmin+i*dx,PH.ymin+j*dy, PH.xmin+i*dx,PH.ymin+(j+1)*dy);
-    if(pts.length>=2) segs.push(pts);
+/* =====================================================================
+   2. State
+   ===================================================================== */
+let aObs = 0.35, wObs = -0.5;
+let sim = simulateAll(aObs, wObs);
+let idx = 0;
+let playing = true; // Default to autoplay on load
+let lastTs = null;
+const PLAYBACK_SPEED = 1.6; // sim-seconds per wall-second
+
+/* =====================================================================
+   3. DOM refs
+   ===================================================================== */
+const sliderA = document.getElementById("sliderA");
+const sliderW = document.getElementById("sliderW");
+const valA = document.getElementById("valA");
+const valW = document.getElementById("valW");
+const tickA = document.getElementById("tickA");
+const tickW = document.getElementById("tickW");
+const bubbleA = document.getElementById("bubbleA");
+const bubbleW = document.getElementById("bubbleW");
+const btnPlay = document.getElementById("btnPlay");
+const btnDpcbf = document.getElementById("btnDpcbf");
+const timeScrub = document.getElementById("timeScrub");
+const timeNow = document.getElementById("timeNow");
+const deltaNum = document.getElementById("deltaNum");
+const deltaCaption = document.getElementById("deltaCaption");
+const statusBadge = document.getElementById("statusBadge");
+const statusText = document.getElementById("statusText");
+
+const chartCanvas = document.getElementById("chartCanvas");
+const sceneCanvas = document.getElementById("sceneCanvas");
+const chartCtx = chartCanvas.getContext("2d");
+const sceneCtx = sceneCanvas.getContext("2d");
+
+/* =====================================================================
+   4. Canvas sizing (device-pixel-ratio aware)
+   ===================================================================== */
+function fitCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(rect.width * dpr));
+  const h = Math.max(1, Math.round(rect.height * dpr));
+  if (canvas.width !== w || canvas.height !== h) {
+    canvas.width = w;
+    canvas.height = h;
   }
-  return segs;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { width: rect.width, height: rect.height };
 }
 
-function rasterFill(ctx, field, NX, NY, T, color){
-  ctx.fillStyle=color;
-  const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
-  const pw=Math.ceil(T.pw/(NX-1))+1, ph=Math.ceil(T.ph/(NY-1))+1;
-  for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){
-    if(field[j*NX+i]<0){
-      ctx.fillRect(
-        T.x(PH.xmin+i*dx - dx/2),
-        T.y(PH.ymin+j*dy + dy/2),
-        pw, ph
-      );
-    }
-  }
+function niceTicks(min, max, count) {
+  const span = max - min;
+  const rawStep = span / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const norm = rawStep / mag;
+  let step;
+  if (norm < 1.5) step = 1 * mag;
+  else if (norm < 3) step = 2 * mag;
+  else if (norm < 7) step = 5 * mag;
+  else step = 10 * mag;
+  const ticks = [];
+  let v = Math.ceil(min / step) * step;
+  for (; v <= max + 1e-9; v += step) ticks.push(Math.round(v * 1000) / 1000);
+  return ticks;
 }
 
-function drawSegs(ctx,segs,T){for(const p of segs){if(p.length<2)continue;ctx.moveTo(T.x(p[0][0]),T.y(p[0][1]));ctx.lineTo(T.x(p[1][0]),T.y(p[1][1]));}}
-
-function arw(ctx,x1,y1,x2,y2,col){
-  const a=Math.atan2(y2-y1,x2-x1), hl=8*DPR;
+/* helper: dotted path (round-cap short dashes read as dots) */
+function strokeDottedPath(ctx, pts, color, width) {
+  if (pts.length < 2) return;
   ctx.save();
-  ctx.strokeStyle=col;ctx.fillStyle=col;
-  ctx.lineWidth=2*DPR;
-  ctx.lineCap='round';ctx.lineJoin='round';
-  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.lineCap = "round";
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.setLineDash([0.01, width * 2.6]);
   ctx.beginPath();
-  ctx.moveTo(x2,y2);
-  ctx.lineTo(x2-hl*Math.cos(a-0.45),y2-hl*Math.sin(a-0.45));
-  ctx.lineTo(x2-hl*Math.cos(a+0.45),y2-hl*Math.sin(a+0.45));
-  ctx.closePath();ctx.fill();
-  ctx.font=`600 ${9*DPR}px 'JetBrains Mono'`;
-  ctx.fillStyle='#991B1B';
-  ctx.fillText('v_rel',(x1+x2)/2-4*DPR,(y1+y2)/2-6*DPR);
+  pts.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+  ctx.stroke();
   ctx.restore();
 }
 
-function gridAxes(ctx,T,xv,yv,xl,yl,W,H,PL,PR,PT,PB){
+/* =====================================================================
+   5. Chart drawing
+   ===================================================================== */
+function drawChart() {
+  const { width, height } = fitCanvas(chartCanvas);
+  const ctx = chartCtx;
+  ctx.clearRect(0, 0, width, height);
+
+  const padL = 40, padR = 16, padT = 16, padB = 32;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+
+  const { t, barA, barB } = sim;
+  const T = SCENARIO.T;
+
+  let yMin = Infinity, yMax = -Infinity;
+  for (let i = 0; i < t.length; i++) {
+    if (barA.h[i] < yMin) yMin = barA.h[i];
+    if (barA.h[i] > yMax) yMax = barA.h[i];
+    if (barB.h[i] < yMin) yMin = barB.h[i];
+    if (barB.h[i] > yMax) yMax = barB.h[i];
+  }
+  yMin = Math.min(yMin, 0);
+  const pad = (yMax - yMin) * 0.12 || 1;
+  yMin -= pad; yMax += pad;
+
+  const xOf = (tt) => padL + (tt / T) * plotW;
+  const yOf = (hh) => padT + (1 - (hh - yMin) / (yMax - yMin)) * plotH;
+
+  ctx.fillStyle = "#f8d8d3";
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(padL, yOf(0), plotW, yOf(yMin) - yOf(0));
+  ctx.globalAlpha = 1;
+
+  ctx.strokeStyle = "#e0e7ff";
+  ctx.lineWidth = 1;
+  ctx.font = "9.5px 'IBM Plex Mono', monospace";
+  ctx.fillStyle = "#818cf8";
+  const yticks = niceTicks(yMin, yMax, 4);
+  yticks.forEach((yt) => {
+    const py = yOf(yt);
+    ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillText(yt.toFixed(1), padL - 7, py);
+  });
+  for (let tt = 0; tt <= T + 1e-9; tt += 2) {
+    const px = xOf(tt);
+    ctx.beginPath(); ctx.moveTo(px, padT); ctx.lineTo(px, padT + plotH); ctx.stroke();
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.fillText(tt.toFixed(0), px, padT + plotH + 5);
+  }
+
+  // X and Y axis labels for the chart plot
   ctx.save();
-  ctx.strokeStyle='rgba(15, 23, 42, 0.05)';ctx.lineWidth=.8*DPR;
-  for(const x of xv){ctx.beginPath();ctx.moveTo(T.x(x),PT);ctx.lineTo(T.x(x),H-PB);ctx.stroke();}
-  for(const y of yv){ctx.beginPath();ctx.moveTo(PL,T.y(y));ctx.lineTo(W-PR,T.y(y));ctx.stroke();}
-  ctx.strokeStyle='rgba(15, 23, 42, 0.15)';ctx.lineWidth=DPR;
-  ctx.beginPath();ctx.moveTo(PL,T.y(0));ctx.lineTo(W-PR,T.y(0));ctx.stroke();
-  ctx.beginPath();ctx.moveTo(T.x(0),PT);ctx.lineTo(T.x(0),H-PB);ctx.stroke();
-  ctx.fillStyle='#64748B';ctx.font=`${9*DPR}px 'JetBrains Mono',monospace`;
-  ctx.textAlign='center';
-  for(const x of xv){if(x===0)continue;ctx.fillText(x,T.x(x),H-PB+12*DPR);}
-  ctx.textAlign='right';
-  for(const y of yv){if(y===0)continue;ctx.fillText(y,PL-5*DPR,T.y(y)+3*DPR);}
-  ctx.font=`500 ${10*DPR}px 'Plus Jakarta Sans',sans-serif`;ctx.fillStyle='#475569';
-  ctx.textAlign='center';
-  ctx.fillText(xl,PL+T.pw/2,H-PB+24*DPR);
+  ctx.font = "10px 'IBM Plex Mono', monospace";
+  ctx.fillStyle = "#4338ca";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("Time t (s)", padL + plotW / 2, padT + plotH + 18);
+
+  ctx.translate(padL - 26, padT + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText("Barrier Value h(x(t))", 0, 0);
   ctx.restore();
+
+  ctx.strokeStyle = "#818cf8";
+  ctx.lineWidth = 1.3;
+  ctx.beginPath(); ctx.moveTo(padL, yOf(0)); ctx.lineTo(padL + plotW, yOf(0)); ctx.stroke();
+
+  // hA: dashed ghost line
+  ctx.setLineDash([5, 4]);
+  ctx.strokeStyle = "#a4a9b1";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < t.length; i++) {
+    const px = xOf(t[i]), py = yOf(barA.h[i]);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // hB: solid, colour switches sign at each segment
+  ctx.lineWidth = 2.2;
+  let firstFailT = null;
+  for (let i = 1; i < t.length; i++) {
+    const neg = barB.h[i] < 0;
+    ctx.strokeStyle = neg ? "#c0392b" : "#2e9e5b";
+    ctx.beginPath();
+    ctx.moveTo(xOf(t[i - 1]), yOf(barB.h[i - 1]));
+    ctx.lineTo(xOf(t[i]), yOf(barB.h[i]));
+    ctx.stroke();
+    if (firstFailT === null && barB.h[i] < 0) firstFailT = t[i];
+  }
+
+  if (firstFailT !== null) {
+    const px = xOf(firstFailT), py = yOf(0);
+    ctx.lineWidth = 1.8; ctx.strokeStyle = "#8a2418";
+    ctx.beginPath();
+    ctx.moveTo(px - 4, py - 4); ctx.lineTo(px + 4, py + 4);
+    ctx.moveTo(px + 4, py - 4); ctx.lineTo(px - 4, py + 4);
+    ctx.stroke();
+    ctx.font = "600 10px 'IBM Plex Mono', monospace";
+    ctx.fillStyle = "#8a2418";
+    ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+    ctx.fillText("fails t=" + firstFailT.toFixed(2) + "s", px + 6, py - 4);
+  }
+
+  const ti = Math.min(t.length - 1, idx);
+  const cx = xOf(t[ti]);
+  ctx.strokeStyle = "#1e1b4b";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([2, 3]);
+  ctx.beginPath(); ctx.moveTo(cx, padT); ctx.lineTo(cx, padT + plotH); ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawDot(ctx, cx, yOf(barA.h[ti]), "#a4a9b1");
+  drawDot(ctx, cx, yOf(barB.h[ti]), barB.h[ti] < 0 ? "#c0392b" : "#2e9e5b");
 }
 
-function drawMarker(ctx,x,y,isRobot,fill,outer){
+function drawDot(ctx, x, y, color) {
+  ctx.beginPath();
+  ctx.arc(x, y, 3.6, 0, Math.PI * 2);
+  ctx.fillStyle = "#fff"; ctx.fill();
+  ctx.lineWidth = 2.2; ctx.strokeStyle = color; ctx.stroke();
+}
+
+/* =====================================================================
+   6. Scene drawing
+   ===================================================================== */
+function computeSceneBounds() {
+  let xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+  const consider = (p) => {
+    if (p.x < xmin) xmin = p.x; if (p.x > xmax) xmax = p.x;
+    if (p.y < ymin) ymin = p.y; if (p.y > ymax) ymax = p.y;
+  };
+  sim.rob.pos.forEach(consider);
+  sim.obsA.pos.forEach(consider);
+  sim.obsB.pos.forEach(consider);
+  consider(ROB_GOAL);
+  const mx = (xmax - xmin) * 0.14 + R_SAFE + 0.6;
+  const my = (ymax - ymin) * 0.14 + R_SAFE + 0.6;
+  return { xmin: xmin - mx, xmax: xmax + mx, ymin: ymin - my, ymax: ymax + my };
+}
+
+function drawMarker(ctx, x, y, kind, color, label) {
   ctx.save();
-  const ri=4*DPR;
-  ctx.fillStyle=fill;
-  ctx.strokeStyle=outer;
-  ctx.lineWidth=1.5*DPR;
-  if(isRobot){
+  if (kind === "start") {
     ctx.beginPath();
-    ctx.rect(x-ri,y-ri,2*ri,2*ri);
-    ctx.fill();
-    ctx.stroke();
-  }else{
-    ctx.beginPath();
-    ctx.arc(x,y,ri,0,Math.PI*2);
-    ctx.fill();
-    ctx.stroke();
+    ctx.arc(x, y, 4.6, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.lineWidth = 1.7; ctx.strokeStyle = color; ctx.stroke();
+  } else if (kind === "goal") {
+    drawStar(ctx, x, y, 5, 6.5, 3);
+    ctx.fillStyle = "#f6cf3f"; ctx.fill();
+    ctx.lineWidth = 1.1; ctx.strokeStyle = "#8a6d00"; ctx.stroke();
+  }
+  if (label) {
+    ctx.font = "600 9px 'IBM Plex Mono', monospace";
+    ctx.fillStyle = "#818cf8";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText(label, x, y - 8);
   }
   ctx.restore();
 }
 
-function render(kappa, vrel, d){
-  const F = buildField(kappa, vrel, d);
-  const PL=36*DPR, PR=10*DPR, PT=12*DPR, PB=28*DPR;
-  const Wp=elCP.width, Hp=elCP.height, Wv=elCV.width, Hv=elCV.height;
-  const Tp=mkT(PH,Wp,Hp,PL,PR,PT,PB);
-  const Tv=mkT(VL,Wv,Hv,PL,PR,PT,PB);
-  const ctxP=elCP.getContext('2d'), ctxV=elCV.getContext('2d');
+function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+  let rot = (Math.PI / 2) * 3;
+  const step = Math.PI / spikes;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - outerR);
+  for (let i = 0; i < spikes; i++) {
+    let x = cx + Math.cos(rot) * outerR, y = cy + Math.sin(rot) * outerR;
+    ctx.lineTo(x, y); rot += step;
+    x = cx + Math.cos(rot) * innerR; y = cy + Math.sin(rot) * innerR;
+    ctx.lineTo(x, y); rot += step;
+  }
+  ctx.lineTo(cx, cy - outerR);
+  ctx.closePath();
+}
 
-  ctxP.clearRect(0,0,Wp,Hp);
-  gridAxes(ctxP,Tp,[-1,0,1,2,3,4,5,6],[-3,-2,-1,0,1,2,3],'x [m]','y [m]',Wp,Hp,PL,PR,PT,PB);
+function drawScene() {
+  const { width, height } = fitCanvas(sceneCanvas);
+  const ctx = sceneCtx;
+  ctx.clearRect(0, 0, width, height);
 
-  rasterFill(ctxP, F.hDP, F.NX, F.NY, Tp, 'rgba(217,119,6,0.12)');
+  const b = computeSceneBounds();
+  const spanX = b.xmax - b.xmin, spanY = b.ymax - b.ymin;
+  const padLeft = 32, padRight = 16, padTop = 16, padBottom = 32;
+  const scale = Math.min((width - padLeft - padRight) / spanX, (height - padTop - padBottom) / spanY);
+  const offX = padLeft + (width - padLeft - padRight - spanX * scale) / 2 - b.xmin * scale;
+  const offY = height - padBottom - (height - padTop - padBottom - spanY * scale) / 2 - (-b.ymin) * scale;
+  const X = (x) => x * scale + offX;
+  const Y = (y) => offY - y * scale;
 
-  const dpS=march(F.hDP, F.NX, F.NY);
-  ctxP.save();ctxP.strokeStyle='#D97706';ctxP.lineWidth=2*DPR;
-  ctxP.beginPath();drawSegs(ctxP,dpS,Tp);ctxP.stroke();ctxP.restore();
-
-  const obs_x=F.obs_x;
-  const ox=Tp.x(obs_x), oy=Tp.y(0);
-  drawMarker(ctxP,ox,oy,false,'#EF4444','#991B1B');
-
-  const rx0=Tp.x(0), ry0=Tp.y(0);
-  drawMarker(ctxP,rx0,ry0,true,'#8B5E3C','#5C4033');
-
-  arw(ctxP, ox, oy, Tp.x(obs_x+F.vrx*0.55), Tp.y(0+F.vry*0.55), '#EF4444');
-
-  ctxV.clearRect(0,0,Wv,Hv);
-  gridAxes(ctxV,Tv,[-5,-4,-3,-2,-1,0,1,2],[-3,-2,-1,0,1,2,3],'ṽ_rel,x [m/s]','ṽ_rel,y [m/s]',Wv,Hv,PL,PR,PT,PB);
-
-  const lam = KL*d/vrel, mu = KM*d;
-  const N=400, dpx=[], dpy=[];
-  for(let i=0;i<=N;i++){
-    const vy=VL.ymin+i/N*(VL.ymax-VL.ymin);
-    const vxd=-lam *vy*vy-mu;
-    if(vxd>=VL.xmin&&vxd<=VL.xmax){dpx.push(vxd);dpy.push(vy);}
+  // grid
+  ctx.strokeStyle = "#e0e7ff";
+  ctx.lineWidth = 1;
+  ctx.font = "8.5px 'IBM Plex Mono', monospace";
+  ctx.fillStyle = "#a5b4fc";
+  for (let gx = Math.ceil(b.xmin / 4) * 4; gx <= b.xmax; gx += 4) {
+    ctx.beginPath(); ctx.moveTo(X(gx), padTop); ctx.lineTo(X(gx), height - padBottom); ctx.stroke();
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.fillText(gx.toFixed(0), X(gx), height - padBottom + 4);
+  }
+  for (let gy = Math.ceil(b.ymin / 4) * 4; gy <= b.ymax; gy += 4) {
+    ctx.beginPath(); ctx.moveTo(padLeft, Y(gy)); ctx.lineTo(width - padRight, Y(gy)); ctx.stroke();
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillText(gy.toFixed(0), padLeft - 5, Y(gy));
   }
 
-  if(dpx.length>1){
-    ctxV.save();ctxV.fillStyle='rgba(217,119,6,0.08)';
-    ctxV.beginPath();ctxV.moveTo(Tv.x(dpx[0]),Tv.y(dpy[0]));
-    for(let i=1;i<dpx.length;i++)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
-    ctxV.lineTo(Tv.x(VL.xmin),Tv.y(dpy[dpy.length-1]));
-    ctxV.lineTo(Tv.x(VL.xmin),Tv.y(dpy[0]));
-    ctxV.closePath();ctxV.fill();ctxV.restore();
+  // X and Y axis labels for the Cartesian space plot
+  ctx.save();
+  ctx.font = "10px 'IBM Plex Mono', monospace";
+  ctx.fillStyle = "#4338ca";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("X Position (m)", padLeft + (width - padLeft - padRight) / 2, height - 14);
 
-    ctxV.save();ctxV.strokeStyle='#D97706';ctxV.lineWidth=2*DPR;
-    ctxV.beginPath();ctxV.moveTo(Tv.x(dpx[0]),Tv.y(dpy[0]));
-    for(let i=1;i<dpx.length;i++)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
-    ctxV.stroke();ctxV.restore();
-  }
+  ctx.translate(12, padTop + (height - padTop - padBottom) / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText("Y Position (m)", 0, 0);
+  ctx.restore();
 
-  const vtx_c=F.vrx, vty_c=F.vry;
-  if(vtx_c>=VL.xmin&&vtx_c<=VL.xmax&&vty_c>=VL.ymin&&vty_c<=VL.ymax){
-    const px=Tv.x(vtx_c), py=Tv.y(vty_c);
-    ctxV.save();
-    ctxV.translate(px,py);
-    ctxV.rotate(Math.PI/4);
-    ctxV.fillStyle='#A855F7';
-    ctxV.strokeStyle='#FFFFFF';
-    ctxV.lineWidth=1.5*DPR;
-    ctxV.beginPath();ctxV.rect(-4*DPR,-4*DPR,8*DPR,8*DPR);
-    ctxV.fill();ctxV.stroke();
-    ctxV.restore();
+  const ti = Math.min(sim.t.length - 1, idx);
+  const cIdx = sim.cIdx;
+  const tiObs = cIdx !== null ? Math.min(ti, cIdx) : ti;
 
-    const hs_now=vtx_c+lam*vty_c*vty_c+mu;
-    const safe=hs_now>=0;
-    const pill=document.getElementById('statusPill');
-    if(pill){
-      if(safe){
-        pill.textContent=`🟢 NOMINAL SAFE • h = +${hs_now.toFixed(2)}`;
-        pill.style.background='#ECFDF5';
-        pill.style.color='#047857';
-        pill.style.border='1px solid #A7F3D0';
-      }else{
-        pill.textContent=`🔴 NOMINAL UNSAFE • h = ${hs_now.toFixed(2)}`;
-        pill.style.background='#FEF2F2';
-        pill.style.color='#B91C1C';
-        pill.style.border='1px solid #FECACA';
-      }
-    }
+  strokeDottedPath(ctx, sim.obsA.pos.slice(0, ti + 1).map((p) => ({ x: X(p.x), y: Y(p.y) })), "#c3c7ce", 3);
+
+  const dangerNow = sim.barB.h[ti] < 0;
+  strokeDottedPath(
+    ctx,
+    sim.obsB.pos.slice(0, tiObs + 1).map((p) => ({ x: X(p.x), y: Y(p.y) })),
+    dangerNow ? "#c0392b" : "#e07b24",
+    3.2
+  );
+
+  strokeDottedPath(
+    ctx,
+    sim.rob.pos.slice(0, tiObs + 1).map((p) => ({ x: X(p.x), y: Y(p.y) })),
+    "#2563eb",
+    3.2
+  );
+
+  drawMarker(ctx, X(SCENARIO.pRob0.x), Y(SCENARIO.pRob0.y), "start", "#2563eb", "start");
+  drawMarker(ctx, X(ROB_GOAL.x), Y(ROB_GOAL.y), "goal", "#c79a00", "goal");
+  drawMarker(ctx, X(SCENARIO.pObs0.x), Y(SCENARIO.pObs0.y), "start", "#e07b24", "obstacle");
+
+  const gA = sim.obsA.pos[ti];
+  ctx.beginPath(); ctx.arc(X(gA.x), Y(gA.y), R_SAFE * scale, 0, Math.PI * 2);
+  ctx.setLineDash([3, 3]); ctx.strokeStyle = "#c3c7ce"; ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(X(gA.x), Y(gA.y), 3.8, 0, Math.PI * 2);
+  ctx.fillStyle = "#fff"; ctx.fill();
+  ctx.lineWidth = 1.7; ctx.strokeStyle = "#9aa0a8"; ctx.stroke();
+
+  const gB = sim.obsB.pos[ti];
+  ctx.beginPath(); ctx.arc(X(gB.x), Y(gB.y), R_SAFE * scale, 0, Math.PI * 2);
+  ctx.fillStyle = dangerNow ? "rgba(192,57,43,0.20)" : "rgba(224,123,36,0.13)";
+  ctx.fill();
+  ctx.lineWidth = 1.2; ctx.strokeStyle = dangerNow ? "#c0392b" : "#e07b24"; ctx.stroke();
+  ctx.beginPath(); ctx.arc(X(gB.x), Y(gB.y), 4.8, 0, Math.PI * 2);
+  ctx.fillStyle = dangerNow ? "#c0392b" : "#e07b24"; ctx.fill();
+
+  const rp = sim.rob.pos[ti];
+  ctx.beginPath(); ctx.arc(X(rp.x), Y(rp.y), 5.2, 0, Math.PI * 2);
+  ctx.fillStyle = "#2563eb"; ctx.fill();
+  ctx.lineWidth = 1.7; ctx.strokeStyle = "#fff"; ctx.stroke();
+
+  if (cIdx !== null && ti >= cIdx) {
+    ctx.font = "700 11px 'IBM Plex Mono', monospace";
+    ctx.fillStyle = "#8a2418";
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    ctx.fillText("COLLISION \u2014 both stopped", (X(rp.x) + X(gB.x)) / 2, Math.min(Y(rp.y), Y(gB.y)) - 10);
   }
 }
 
-function pct(el){return((+el.value-+el.min)/(+el.max-+el.min)*100).toFixed(1)+'%';}
-let raf=null;
-function onInput(){
-  const k=+document.getElementById('sk').value;
-  const v=+document.getElementById('sv').value;
-  const d=+document.getElementById('sd').value;
-  theta=+document.getElementById('sa').value;
-  document.getElementById('vk').textContent=k.toFixed(2);
-  document.getElementById('vv').textContent=v.toFixed(2);
-  document.getElementById('vd').textContent=d.toFixed(2);
-  document.getElementById('va').textContent=Math.round(theta);
-  ['sk','sv','sd','sa'].forEach(id=>{const el=document.getElementById(id);el.style.setProperty('--p',pct(el));});
-  if(raf)cancelAnimationFrame(raf);
-  raf=requestAnimationFrame(()=>render(k,v,d));
+/* =====================================================================
+   7. Readouts
+   ===================================================================== */
+function updateReadouts() {
+  const ti = Math.min(sim.t.length - 1, idx);
+  const d = sim.delta[ti];
+  deltaNum.textContent = (d >= 0 ? "+" : "\u2212") + Math.abs(d).toFixed(2) + " m/s\u00B2";
+  deltaNum.className = "delta-num " + (d < 0 ? "neg" : "pos");
+  deltaCaption.textContent =
+    sim.cIdx !== null && ti >= sim.cIdx
+      ? "both bodies have stopped"
+      : d < 0
+      ? "true barrier falling faster than DPCBF assumes"
+      : "true barrier falling slower than DPCBF assumes";
+
+  timeNow.textContent = sim.t[ti].toFixed(2);
+  timeScrub.value = Math.round((ti / (sim.t.length - 1)) * 1000);
+
+  let firstFail = null, minH = Infinity;
+  for (let i = 0; i < sim.t.length; i++) {
+    if (sim.barB.h[i] < minH) minH = sim.barB.h[i];
+    if (firstFail === null && sim.barB.h[i] < 0) firstFail = sim.t[i];
+  }
+  if (firstFail === null) {
+    statusBadge.className = "status-badge ok";
+    statusText.textContent = "certificate holds \u00b7 min h = " + minH.toFixed(2);
+  } else {
+    statusBadge.className = "status-badge fail";
+    statusText.textContent = "certificate fails at t=" + firstFail.toFixed(2) + "s";
+  }
 }
-['sk','sv','sd','sa'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
-window.addEventListener('resize',()=>{setupC(elCP);setupC(elCV);onInput();});
-['sk','sv','sd','sa'].forEach(id=>{const el=document.getElementById(id);el.style.setProperty('--p',pct(el));});
-onInput();
+
+/* =====================================================================
+   8. Slider visuals: bipolar fill, zero tick, drag bubble
+   ===================================================================== */
+function sliderColor(name, value) {
+  if (value === 0) return "var(--border-strong)";
+  return name === "a" ? (value > 0 ? "var(--orange)" : "var(--blue)") : (value > 0 ? "var(--green)" : "var(--red)");
+}
+
+function updateSliderFill(slider, value) {
+  const min = parseFloat(slider.min), max = parseFloat(slider.max);
+  const pct = (v) => ((v - min) / (max - min)) * 100;
+  const zp = pct(0), vp = pct(value);
+  const lo = Math.min(zp, vp), hi = Math.max(zp, vp);
+  const color = sliderColor(slider.id === "sliderA" ? "a" : "w", value);
+  slider.style.background =
+    `linear-gradient(to right, var(--border-strong) 0%, var(--border-strong) ${lo}%, ` +
+    `${color} ${lo}%, ${color} ${hi}%, var(--border-strong) ${hi}%, var(--border-strong) 100%)`;
+}
+
+function positionZeroTick(slider, tick) {
+  const min = parseFloat(slider.min), max = parseFloat(slider.max);
+  const zp = ((0 - min) / (max - min)) * 100;
+  tick.style.left = zp + "%";
+}
+
+function positionBubble(slider, bubble, text) {
+  const min = parseFloat(slider.min), max = parseFloat(slider.max);
+  const val = parseFloat(slider.value);
+  const pct = (val - min) / (max - min);
+  const thumbW = 15;
+  const w = slider.clientWidth;
+  const x = pct * (w - thumbW) + thumbW / 2;
+  bubble.style.left = x + "px";
+  bubble.textContent = text;
+}
+
+function wireSlider(slider, tick, bubble, fmt) {
+  const refresh = () => {
+    updateSliderFill(slider, parseFloat(slider.value));
+    positionZeroTick(slider, tick);
+    positionBubble(slider, bubble, fmt(parseFloat(slider.value)));
+  };
+  refresh();
+  slider.addEventListener("input", refresh);
+  const show = () => bubble.classList.add("show");
+  const hide = () => bubble.classList.remove("show");
+  slider.addEventListener("pointerdown", show);
+  slider.addEventListener("pointerup", hide);
+  slider.addEventListener("pointercancel", hide);
+  slider.addEventListener("focus", show);
+  slider.addEventListener("blur", hide);
+  window.addEventListener("resize", refresh);
+  return refresh;
+}
+
+/* =====================================================================
+   9. Render + animation loop
+   ===================================================================== */
+function render() { drawChart(); drawScene(); updateReadouts(); }
+
+function recompute() {
+  sim = simulateAll(aObs, wObs);
+  idx = Math.min(idx, sim.t.length - 1);
+  render();
+}
+
+function step(ts) {
+  if (!playing) return;
+  if (lastTs === null) lastTs = ts;
+  const dtWall = (ts - lastTs) / 1000;
+  lastTs = ts;
+  const advance = Math.round((dtWall * PLAYBACK_SPEED) / SCENARIO.dt);
+  idx += advance;
+  if (idx >= sim.t.length - 1) {
+    idx = 0; // Loop back to start instead of stopping
+  }
+  render();
+  requestAnimationFrame(step);
+}
+
+/* =====================================================================
+   10. Events
+   ===================================================================== */
+const refreshSliderA = wireSlider(sliderA, tickA, bubbleA, (v) => v.toFixed(2));
+const refreshSliderW = wireSlider(sliderW, tickW, bubbleW, (v) => v.toFixed(2));
+
+sliderA.addEventListener("input", () => {
+  aObs = parseFloat(sliderA.value);
+  valA.textContent = aObs.toFixed(2);
+  recompute();
+});
+sliderW.addEventListener("input", () => {
+  wObs = parseFloat(sliderW.value);
+  valW.textContent = wObs.toFixed(2);
+  recompute();
+});
+
+btnPlay.addEventListener("click", () => {
+  if (playing) {
+    playing = false;
+    btnPlay.innerHTML = "&#9654;&nbsp; Play";
+  } else {
+    if (idx >= sim.t.length - 1) idx = 0;
+    playing = true;
+    lastTs = null;
+    btnPlay.innerHTML = "&#10074;&#10074;&nbsp; Pause";
+    requestAnimationFrame(step);
+  }
+});
+
+btnDpcbf.addEventListener("click", () => {
+  // Reset parameters to constant velocity case (a_obs = 0, w_obs = 0)
+  aObs = 0.0;
+  wObs = 0.0;
+  sliderA.value = "0.00";
+  sliderW.value = "0.00";
+  valA.textContent = "0.00";
+  valW.textContent = "0.00";
+  refreshSliderA();
+  refreshSliderW();
+  
+  playing = true;
+  btnPlay.innerHTML = "&#10074;&#10074;&nbsp; Pause";
+  idx = 0;
+  lastTs = null;
+  recompute();
+  requestAnimationFrame(step);
+});
+
+timeScrub.addEventListener("input", () => {
+  playing = false;
+  btnPlay.innerHTML = "&#9654;&nbsp; Play";
+  const frac = parseFloat(timeScrub.value) / 1000;
+  idx = Math.round(frac * (sim.t.length - 1));
+  render();
+});
+
+window.addEventListener("resize", render);
+
+/* =====================================================================
+   11. Init
+   ===================================================================== */
+valA.textContent = aObs.toFixed(2);
+valW.textContent = wObs.toFixed(2);
+render();
+// Start autoplay loop immediately on load
+requestAnimationFrame(step);
 </script>
 </body>
 </html>

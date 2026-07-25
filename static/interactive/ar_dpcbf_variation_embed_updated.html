@@ -1,360 +1,124 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>AR-DPCBF — Adversarial Barrier Variation</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
 <style>
-/* Modern CSS Reset & Light Mode Design Tokens */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:transparent;--surf:#fff;--bdr:#E2E5ED;--t1:#1A1D2E;--t2:#5A6070;
+  --k-bg:#FFF0EE;--k-b:#C0352F;--k-v:#8A1510;
+  --v-bg:#EBF3FF;--v-b:#2558A8;--v-v:#163768;
+  --d-bg:#E0F7FA;--d-b:#00838F;--d-v:#006064;
+  --a-bg:#F3EEFF;--a-b:#7C3AED;--a-v:#5B21B6;}
+body{background:transparent;font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;padding:24px 16px 40px;}
+.hdr{text-align:center;margin-bottom:20px;}
+.hdr h1{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px;}
+.hdr p{font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace;}
+.card{background:transparent;border:none;border-radius:14px;
+  padding:22px 22px 18px;max-width:1020px;margin:0 auto;}
+.sls{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px;}
+.sb{border-radius:10px;padding:12px;background:#fff !important;border:1px solid var(--bdr) !important;}
+.sb.k{background:var(--k-bg);border:1.5px solid var(--k-b);}
+.sb.v{background:var(--v-bg);border:1.5px solid var(--v-b);}
+.sb.d{background:var(--d-bg);border:1.5px solid var(--d-b);}
+.sbt{display:flex;align-items:baseline;gap:6px;margin-bottom:7px;}
+.sbl{font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;}
+.sb.k .sbl{color:#666}.sb.v .sbl{color:#666}.sb.d .sbl{color:#006064}
+.sbv{font-size:21px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:-.02em;line-height:1;}
+.sb.k .sbv{color:var(--k-b)}.sb.v .sbv{color:var(--v-b)}.sb.d .sbv{color:var(--d-b)}
+.sbu{font-size:11px;font-family:'JetBrains Mono',monospace;}
+.sb.k .sbu{color:var(--k-b)}.sb.v .sbu{color:var(--v-b)}.sb.d .sbu{color:var(--d-b)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;outline:none;cursor:pointer;}
+.sb.k input{background:linear-gradient(to right,var(--k-b) var(--p,40%),#DDD var(--p,40%));}
+.sb.v input{background:linear-gradient(to right,var(--v-b) var(--p,40%),#DDD var(--p,40%));}
+.sb.d input{background:linear-gradient(to right,var(--d-b) var(--p,40%),#DDD var(--p,40%));}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  border:2px solid white;box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.12);cursor:pointer;}
+.sb.k input::-webkit-slider-thumb{background:var(--k-b);}
+.sb.v input::-webkit-slider-thumb{background:var(--v-b);}
+.sb.d input::-webkit-slider-thumb{background:var(--d-b);}
+.sb.a{background:var(--a-bg);border:1.5px solid var(--a-b);}
+.sb.a .sbv{color:var(--a-b)}
+.sb.a .sbu{color:var(--a-b)}
+.sb.a input{background:linear-gradient(to right,var(--a-b) var(--p,40%),#DDD var(--p,40%));}
+.sb.a input::-webkit-slider-thumb{background:var(--a-b);}
 
-:root {
-  --bg: #F4F7F9;
-  --panel-bg: #FFFFFF;
-  --panel-border: #E2E8F0;
-  --text-main: #0F172A;
-  --text-muted: #64748B;
-  
-  /* Accent Colors */
-  --k-accent: #EF4444;
-  --v-accent: #3B82F6;
-  --d-accent: #0D9488;
-  --a-accent: #8B5CF6;
-}
+.plots{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.pw{display:flex;flex-direction:column;gap:5px;}
+.pt{font-size:11px;font-weight:500;color:var(--t2);letter-spacing:.04em;text-transform:uppercase;}
+canvas{display:block;width:100%;border-radius:12px;border:1px solid var(--bdr);background:#FFFFFF;}
+.embed{box-shadow:none;border:none;background:transparent;padding:0}.sls{margin-bottom:12px}.sb{padding:10px 12px}.pt{font-size:15px;font-weight:600}.leg{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:28px;padding-top:18px;border-top:1px solid var(--bdr);}
+.li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);}
+.lsw{width:13px;height:13px;border-radius:3px;border:1.5px solid;}
+.lln{width:22px;height:3px;border-radius:1.5px;}
+.lds{width:22px;height:0;border-top:2.5px dashed;}
+.ldt{width:9px;height:9px;border-radius:50%;}
 
-body {
-  background-color: var(--bg);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.06) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.06) 0px, transparent 50%);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: var(--text-main);
-  min-height: 100vh;
-  padding: 32px 24px;
-}
+canvas{transition:transform .12s ease;}
+.sb{transition:box-shadow .15s ease,transform .15s ease;}
+.sb:hover{box-shadow:0 3px 10px rgba(0,0,0,.08);}
+input[type=range]:active{cursor:grabbing;}
 
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
 
-/* Header Styling */
-.hdr {
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.hdr h1 {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-main);
-}
-
-.hdr p {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-  margin-top: 6px;
-}
-
-/* Elevated Light Card Wrapper */
-.card {
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.08);
-}
-
-/* Grid Layout for Canvas Plots */
-.plots {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
-  gap: 24px;
-}
-
-.pw {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.pt {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pt span {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-canvas {
-  display: block;
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid var(--panel-border);
-  background: #F8FAFC;
-}
-
-/* Legend Styling */
-.leg {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px 24px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--panel-border);
-}
-
-.li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.lsw { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid; }
-.lln { width: 22px; height: 3px; border-radius: 2px; }
-
-/* Status Bar & Controls Header Section */
-.controls-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 28px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--panel-border);
-}
-
-.controls-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.status-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: #F1F5F9;
-  border: 1px solid var(--panel-border);
-}
-
-.status-title { font-size: 12px; font-weight: 700; color: var(--text-main); }
-.status-sub { font-size: 10px; font-weight: 500; color: var(--text-muted); }
-
-.status-pill {
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  transition: all 0.3s ease;
-}
-
-/* Grid Layout for Interactive Control Sliders */
-.sls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.sb {
-  border-radius: 12px;
-  padding: 16px;
-  background: #F8FAFC;
-  border: 1px solid var(--panel-border);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.sb:hover {
-  transform: translateY(-2px);
-  border-color: #CBD5E1;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
-}
-
-.sbt {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 12px;
-}
-
-.sbl {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.sbv {
-  font-size: 18px;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.sbu {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin-left: 2px;
-}
-
-/* Colored Accents */
-.sb.k .sbv { color: var(--k-accent); }
-.sb.v .sbv { color: var(--v-accent); }
-.sb.d .sbv { color: var(--d-accent); }
-.sb.a .sbv { color: var(--a-accent); }
-
-/* Range Inputs Styling */
-input[type=range] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  outline: none;
-  cursor: pointer;
-}
-
-.sb.k input { background: linear-gradient(to right, var(--k-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-.sb.v input { background: linear-gradient(to right, var(--v-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-.sb.d input { background: linear-gradient(to right, var(--d-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-.sb.a input { background: linear-gradient(to right, var(--a-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  cursor: pointer;
-}
-
-.sb.k input::-webkit-slider-thumb { background: var(--k-accent); }
-.sb.v input::-webkit-slider-thumb { background: var(--v-accent); }
-.sb.d input::-webkit-slider-thumb { background: var(--d-accent); }
-.sb.a input::-webkit-slider-thumb { background: var(--a-accent); }
+.status-card{margin:18px 0 24px;padding:16px 18px;border:1px solid #E2E5ED;border-left:6px solid #16A34A;border-radius:12px;background:#F9FAFB;display:flex;justify-content:space-between;align-items:center;transition:.2s}
+.status-title{font-size:13px;font-weight:600;color:#374151}
+.status-sub{font-size:11px;color:#6B7280}
+.status-pill{padding:8px 14px;border-radius:999px;font-weight:700;font-size:13px}
+.controls-header{display:flex;justify-content:space-between;align-items:center;margin-top:28px;margin-bottom:12px;gap:18px}
+.controls-title{font-size:15px;font-weight:600;color:#374151}
+.status-card.compact{margin:0;min-width:280px;padding:10px 14px}
 </style>
 </head>
 <body>
-
-<div class="container">
-  <div class="hdr">
-    <h1>AR-DPCBF Safety Certification</h1>
-    <p>Adversarial Robust Dynamic Parameterized Control Barrier Functions</p>
-  </div>
-
-  <div class="card">
-    <div class="plots">
-      <div class="pw">
-        <div class="pt">(A) Physical Space <span>Robot–Obstacle Geometry</span></div>
-        <canvas height="400" id="cp"></canvas>
-      </div>
-      <div class="pw">
-        <div class="pt">(B) Velocity Space <span>Barrier Validity Domain</span></div>
-        <canvas height="400" id="cv"></canvas>
-      </div>
-    </div>
-
-    <div class="leg">
-      <div class="li"><div class="lsw" style="background:rgba(245,158,11,0.15); border-color:#D97706;"></div>DPCBF Unsafe</div>
-      <div class="li"><div class="lsw" style="background:rgba(37,99,235,0.15); border-color:#2563EB;"></div>AR-DPCBF Unsafe</div>
-      <div class="li"><div class="lln" style="background:#D97706;"></div>DPCBF Boundary</div>
-      <div class="li"><div class="lln" style="background:#2563EB;"></div>AR-DPCBF Boundary</div>
-      <div class="li"><div style="width:10px;height:10px;background:#8B5E3C;border:1px solid #5C4033;"></div>Robot</div>
-      <div class="li"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444;border:1px solid #991B1B;"></div>Obstacle</div>
-      <div class="li"><div style="width:8px;height:8px;background:#A855F7;transform:rotate(45deg);"></div>Current v_rel</div>
-    </div>
-
-    <div class="controls-header">
-      <div class="controls-title">Interactive Simulation Controls</div>
-      <div class="status-card" id="statusCard">
-        <div>
-          <div class="status-title">Safety Certification</div>
-          <div class="status-sub">Evaluated dynamically</div>
-        </div>
-        <div class="status-pill" id="statusPill">🟢 SAFE • Margin +0.00</div>
-      </div>
-    </div>
-
-    <div class="sls">
-      <div class="sb k">
-        <div class="sbt">
-          <span class="sbl">Adv. Acceleration κ</span>
-          <div><span class="sbv" id="vk">1.42</span><span class="sbu">m/s²</span></div>
-        </div>
-        <input id="sk" max="3.5" min="0" step="0.02" type="range" value="1.42"/>
-      </div>
-
-      <div class="sb v">
-        <div class="sbt">
-          <span class="sbl">Relative Speed ‖v_rel‖</span>
-          <div><span class="sbv" id="vv">1.20</span><span class="sbu">m/s</span></div>
-        </div>
-        <input id="sv" max="3.5" min="0.3" step="0.02" type="range" value="1.20"/>
-      </div>
-
-      <div class="sb d">
-        <div class="sbt">
-          <span class="sbl">Separation Distance d</span>
-          <div><span class="sbv" id="vd">2.00</span><span class="sbu">m</span></div>
-        </div>
-        <input id="sd" max="5.0" min="0.3" step="0.02" type="range" value="2.00"/>
-      </div>
-
-      <div class="sb a">
-        <div class="sbt">
-          <span class="sbl">Relative Direction θ</span>
-          <div><span class="sbv" id="va">132</span><span class="sbu">°</span></div>
-        </div>
-        <input id="sa" max="180" min="-180" step="1" type="range" value="132"/>
-      </div>
-    </div>
-  </div>
+<div class="card embed">
+<div class="plots">
+<div class="pw"><div class="pt"><b>(A)</b> Physical Space<br/><span style="font-size:12px;font-weight:400;color:#7a8597">Robot–Obstacle Geometry</span></div><canvas height="400" id="cp"></canvas></div>
+<div class="pw"><div class="pt"><b>(B)</b> Velocity Space<br/><span style="font-size:12px;font-weight:400;color:#7a8597">Barrier Validity</span></div><canvas height="400" id="cv"></canvas></div>
+</div>
+<div class="leg">
+<div class="li"><div class="lsw" style="background:rgba(244,114,92,0.15);border-color:#F4725C;"></div>DPCBF unsafe</div>
+<div class="li"><div class="lsw" style="background:rgba(20,184,166,0.15);border-color:#14B8A6;"></div>AR-DPCBF unsafe</div>
+<div class="li"><div class="lln" style="background:#F4725C;"></div>DPCBF boundary</div>
+<div class="li"><div class="lln" style="background:#14B8A6;"></div>AR-DPCBF boundary</div>
+<div class="li"><div style="width:12px;height:12px;background:#C86400;border:2px solid #fff;outline:1.5px solid #964B00;"></div>Robot</div>
+<div class="li"><div style="width:12px;height:12px;border-radius:50%;background:#EF4444;border:2px solid #fff;outline:1.5px solid #991B1B;"></div>Obstacle</div>
+<div class="li"><div style="width:10px;height:10px;background:#7C3AED;border:2px solid #fff;outline:1.5px solid #5B21B6;transform:rotate(45deg);"></div>Current v_rel</div>
+</div>
+<div class="controls-header">
+  <div class="controls-title">Interactive controls</div>
+  <div class="status-card compact" id="statusCard">
+<div>
+<div class="status-title">Safety Status</div>
+<div class="status-sub">Certified using AR-DPCBF</div>
+</div>
+<div class="sls">
+<div class="sb k"><div class="sbt"><span class="sbl">Adversarial acceleration κ</span><span class="sbv" id="vk">1.42</span><span class="sbu">m/s²</span></div><input id="sk" max="3.5" min="0" step="0.02" type="range" value="1.42"/></div>
+<div class="sb v"><div class="sbt"><span class="sbl">Relative speed ‖v_rel‖</span><span class="sbv" id="vv">1.20</span><span class="sbu">m/s</span></div><input id="sv" max="3.5" min="0.3" step="0.02" type="range" value="1.20"/></div>
+<div class="sb d"><div class="sbt"><span class="sbl" style="color:#00838F;">Separation distance d</span><span class="sbv" id="vd">2.00</span><span class="sbu">m</span></div><input id="sd" max="5.0" min="0.3" step="0.02" type="range" value="2.00"/></div>
+<div class="sb a"><div class="sbt"><span class="sbl">Relative direction θ</span><span class="sbv" id="va">132</span><span class="sbu">°</span></div><input id="sa" max="180" min="-180" step="1" type="range" value="132"/></div>
+</div>
+</div>
+<div class="status-pill" id="statusPill">🟢 SAFE • Margin +0.00</div>
 </div>
 
+</div>
 <script>
-// JavaScript Logic preserved and optimized for light mode canvas rendering
+// Constants
 const KL=0.144, KM=0.505, GAM=10, AMAX=1.0, RS=0.8, RR=0.3, RO=0.5;
 const DPR = Math.min(window.devicePixelRatio||1, 2);
 
+// Relative velocity direction
 let theta=132;
+
+// Plot axes
 const PH={xmin:-1.5, xmax:7.0, ymin:-3.8, ymax:3.8};
 const VL={xmin:-5.5, xmax:2.2, ymin:-3.5, ymax:3.5};
 
 const elCP=document.getElementById('cp'), elCV=document.getElementById('cv');
-function setupC(c){
-  const w=c.parentElement.clientWidth; 
-  c.style.width=w+'px'; 
-  c.style.height='380px'; 
-  c.width=w*DPR; 
-  c.height=380*DPR;
-}
+function setupC(c){const w=c.parentElement.clientWidth; c.style.width=w+'px'; c.style.height='410px'; c.width=w*DPR; c.height=410*DPR;}
 setupC(elCP); setupC(elCV);
 
 function mkT(ax,W,H,PL,PR,PT,PB){
@@ -363,11 +127,13 @@ function mkT(ax,W,H,PL,PR,PT,PB){
          y:v=>PT+(1-(v-ax.ymin)/(ax.ymax-ax.ymin))*ph, pw, ph};
 }
 
+// ── Barrier field computation ──────────────────────────────────────────
 function buildField(kappa, vrel, d_slider){
   const obs_x = Math.sqrt(d_slider*d_slider + RS*RS);
   const th=theta*Math.PI/180;
   const VDX=Math.cos(th), VDY=Math.sin(th);
   const vrx=VDX*vrel, vry=VDY*vrel;
+  const dmu_factor = kappa/(GAM*vrel);
 
   const NX=220, NY=220;
   const hDP = new Float32Array(NX*NY);
@@ -403,6 +169,7 @@ function buildField(kappa, vrel, d_slider){
   return {hDP, hAR, NX, NY, dxf, dyf, obs_x, vrx, vry};
 }
 
+// ── Marching squares ──────────────────────────────────────────────────
 function march(field, NX, NY){
   const segs=[];
   const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
@@ -423,6 +190,7 @@ function march(field, NX, NY){
   return segs;
 }
 
+// ── Raster fill ─────────────────────────────────────────────────────
 function rasterFill(ctx, field, NX, NY, T, color){
   ctx.fillStyle=color;
   const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
@@ -438,13 +206,14 @@ function rasterFill(ctx, field, NX, NY, T, color){
   }
 }
 
+// ── Drawing utilities ──────────────────────────────────────────────────
 function drawSegs(ctx,segs,T){for(const p of segs){if(p.length<2)continue;ctx.moveTo(T.x(p[0][0]),T.y(p[0][1]));ctx.lineTo(T.x(p[1][0]),T.y(p[1][1]));}}
 
 function arw(ctx,x1,y1,x2,y2,col,lw){
-  const a=Math.atan2(y2-y1,x2-x1), hl=10*DPR;
+  const a=Math.atan2(y2-y1,x2-x1), hl=11*DPR;
   ctx.save();
   ctx.strokeStyle=col;ctx.fillStyle=col;
-  ctx.lineWidth=2*DPR;
+  ctx.lineWidth=2.5*DPR;
   ctx.lineCap='round';ctx.lineJoin='round';
   ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
   ctx.beginPath();
@@ -452,7 +221,7 @@ function arw(ctx,x1,y1,x2,y2,col,lw){
   ctx.lineTo(x2-hl*Math.cos(a-0.45),y2-hl*Math.sin(a-0.45));
   ctx.lineTo(x2-hl*Math.cos(a+0.45),y2-hl*Math.sin(a+0.45));
   ctx.closePath();ctx.fill();
-  ctx.font=`600 ${10*DPR}px 'JetBrains Mono'`;
+  ctx.font=`italic 500 ${11*DPR}px 'Inter', sans-serif`;
   ctx.fillStyle='#991B1B';
   ctx.fillText('v_rel',(x1+x2)/2-4*DPR,(y1+y2)/2-8*DPR);
   ctx.restore();
@@ -460,93 +229,108 @@ function arw(ctx,x1,y1,x2,y2,col,lw){
 
 function gridAxes(ctx,T,ax,xv,yv,xl,yl,W,H,PL,PR,PT,PB){
   ctx.save();
-  ctx.strokeStyle='rgba(15, 23, 42, 0.05)';ctx.lineWidth=.8*DPR;
+  ctx.strokeStyle='rgba(150,160,180,0.12)';ctx.lineWidth=.6*DPR;
   for(const x of xv){ctx.beginPath();ctx.moveTo(T.x(x),PT);ctx.lineTo(T.x(x),H-PB);ctx.stroke();}
   for(const y of yv){ctx.beginPath();ctx.moveTo(PL,T.y(y));ctx.lineTo(W-PR,T.y(y));ctx.stroke();}
-  ctx.strokeStyle='rgba(15, 23, 42, 0.15)';ctx.lineWidth=DPR;
+  ctx.strokeStyle='#CBD5E1';ctx.lineWidth=1.2*DPR;
   ctx.beginPath();ctx.moveTo(PL,T.y(0));ctx.lineTo(W-PR,T.y(0));ctx.stroke();
   ctx.beginPath();ctx.moveTo(T.x(0),PT);ctx.lineTo(T.x(0),H-PB);ctx.stroke();
-  ctx.fillStyle='#64748B';ctx.font=`${9*DPR}px 'JetBrains Mono',monospace`;
+  ctx.fillStyle='#475569';ctx.font=`500 ${11*DPR}px 'Inter', sans-serif`;
   ctx.textAlign='center';
-  for(const x of xv){if(x===0)continue;ctx.fillText(x,T.x(x),H-PB+14*DPR);}
+  for(const x of xv){if(x===0)continue;ctx.fillText(x,T.x(x),H-PB+16*DPR);}
   ctx.textAlign='right';
-  for(const y of yv){if(y===0)continue;ctx.fillText(y,PL-6*DPR,T.y(y)+3*DPR);}
-  ctx.font=`500 ${11*DPR}px 'Plus Jakarta Sans',sans-serif`;ctx.fillStyle='#475569';
+  for(const y of yv){if(y===0)continue;ctx.fillText(y,PL-8*DPR,T.y(y)+4*DPR);}
+  ctx.font=`600 ${12*DPR}px 'Inter', sans-serif`;ctx.fillStyle='#1E293B';
   ctx.textAlign='center';
-  ctx.fillText(xl,PL+T.pw/2,H-PB+28*DPR);
-  ctx.save();ctx.translate(PL-28*DPR,PT+T.ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  ctx.fillText(xl,PL+T.pw/2,H-PB+32*DPR);
+  ctx.save();ctx.translate(PL-38*DPR,PT+T.ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
   ctx.restore();
 }
 
 function drawMarker(ctx,x,y,isRobot,fill,outer){
   ctx.save();
-  const ri=5*DPR;
+  ctx.shadowColor='rgba(0,0,0,0.18)';
+  ctx.shadowBlur=8*DPR;
+  ctx.shadowOffsetY=2*DPR;
+  const ro=6.2*DPR;      
+  const ri=4.9*DPR;      
   ctx.fillStyle=fill;
-  ctx.strokeStyle=outer;
-  ctx.lineWidth=2*DPR;
+  ctx.strokeStyle='#FFFFFF';
+  ctx.lineWidth=2.4*DPR;
   if(isRobot){
     ctx.beginPath();
     ctx.rect(x-ri,y-ri,2*ri,2*ri);
     ctx.fill();
     ctx.stroke();
+    ctx.shadowColor='transparent';
+    ctx.strokeStyle=outer;
+    ctx.lineWidth=1.4*DPR;
+    ctx.strokeRect(x-ro,y-ro,2*ro,2*ro);
   }else{
     ctx.beginPath();
     ctx.arc(x,y,ri,0,Math.PI*2);
     ctx.fill();
     ctx.stroke();
+    ctx.shadowColor='transparent';
+    ctx.beginPath();
+    ctx.strokeStyle=outer;
+    ctx.lineWidth=1.4*DPR;
+    ctx.arc(x,y,ro,0,Math.PI*2);
+    ctx.stroke();
   }
   ctx.restore();
 }
 
+// ── Main render ────────────────────────────────────────────────────────
 function render(kappa, vrel, d){
   const F = buildField(kappa, vrel, d);
-  const PL=42*DPR, PR=14*DPR, PT=16*DPR, PB=36*DPR;
+  const PL=55*DPR, PR=14*DPR, PT=16*DPR, PB=46*DPR;
   const Wp=elCP.width, Hp=elCP.height, Wv=elCV.width, Hv=elCV.height;
   const Tp=mkT(PH,Wp,Hp,PL,PR,PT,PB);
   const Tv=mkT(VL,Wv,Hv,PL,PR,PT,PB);
   const ctxP=elCP.getContext('2d'), ctxV=elCV.getContext('2d');
 
+  // ── Physical Space ──────────────────────────────────────────────────
   ctxP.clearRect(0,0,Wp,Hp);
-  gridAxes(ctxP,Tp,PH,[-1,0,1,2,3,4,5,6],[-3,-2,-1,0,1,2,3],'x [m]','y [m]',Wp,Hp,PL,PR,PT,PB);
+  ctxP.fillStyle='#FFFFFF'; ctxP.fillRect(0,0,Wp,Hp);
+  gridAxes(ctxP,Tp,PH,[-1,0,1,2,3,4,5,6],[-3,-2,-1,0,1,2,3],'Position X (m)','Position Y (m)',Wp,Hp,PL,PR,PT,PB);
 
-  rasterFill(ctxP, F.hAR, F.NX, F.NY, Tp, 'rgba(37,99,235,0.08)');
-  rasterFill(ctxP, F.hDP, F.NX, F.NY, Tp, 'rgba(217,119,6,0.12)');
+  rasterFill(ctxP, F.hAR, F.NX, F.NY, Tp, 'rgba(20,184,166,0.07)');
+  rasterFill(ctxP, F.hDP, F.NX, F.NY, Tp, 'rgba(244,114,92,0.07)');
 
   const dpS=march(F.hDP, F.NX, F.NY);
-  ctxP.save();ctxP.strokeStyle='#D97706';ctxP.lineWidth=2*DPR;ctxP.setLineDash([]);
+  ctxP.save();ctxP.strokeStyle='#F4725C';ctxP.lineWidth=3*DPR;ctxP.setLineDash([]);ctxP.lineCap='round';
   ctxP.beginPath();drawSegs(ctxP,dpS,Tp);ctxP.stroke();ctxP.restore();
 
   const arS=march(F.hAR, F.NX, F.NY);
-  ctxP.save();ctxP.strokeStyle='#2563EB';ctxP.lineWidth=2.5*DPR;ctxP.setLineDash([]);
+  ctxP.save();ctxP.strokeStyle='#14B8A6';ctxP.lineWidth=2.5*DPR;ctxP.setLineDash([]);ctxP.lineCap='round';
   ctxP.beginPath();drawSegs(ctxP,arS,Tp);ctxP.stroke();ctxP.restore();
 
   const obs_x=F.obs_x;
   const ox=Tp.x(obs_x), oy=Tp.y(0);
-  const halo=RO/(PH.xmax-PH.xmin)*Tp.pw*1.9;
-  ctxP.save();
-  ctxP.fillStyle='rgba(239,68,68,0.1)';
-  ctxP.beginPath();ctxP.arc(ox,oy,halo,0,Math.PI*2);ctxP.fill();
   drawMarker(ctxP,ox,oy,false,'#EF4444','#991B1B');
 
   const rx0=Tp.x(0), ry0=Tp.y(0);
-  drawMarker(ctxP,rx0,ry0,true,'#8B5E3C','#5C4033');
+  drawMarker(ctxP,rx0,ry0,true,'#C86400','#964B00');
 
-  ctxP.save();ctxP.strokeStyle='#94A3B8';ctxP.lineWidth=DPR;ctxP.setLineDash([3*DPR,4*DPR]);
+  ctxP.save();ctxP.strokeStyle='#BFC7D8';ctxP.lineWidth=DPR;ctxP.setLineDash([3*DPR,4*DPR]);
   ctxP.beginPath();ctxP.moveTo(rx0,ry0);ctxP.lineTo(ox,oy);ctxP.stroke();ctxP.restore();
 
-  arw(ctxP, ox, oy, Tp.x(obs_x+F.vrx*0.55), Tp.y(0+F.vry*0.55), '#EF4444', 2*DPR);
+  arw(ctxP, ox, oy, Tp.x(obs_x+F.vrx*0.55), Tp.y(0+F.vry*0.55), '#DC2626', 2.5*DPR);
 
-  const ay=Math.max(ry0,oy)+22*DPR;
-  ctxP.save();ctxP.strokeStyle='#0D9488';ctxP.lineWidth=1.5*DPR;
+  const ay=Math.max(ry0,oy)+26*DPR;
+  ctxP.save();ctxP.strokeStyle='#00838F';ctxP.lineWidth=2*DPR;ctxP.setLineDash([]);ctxP.lineCap='round';
   ctxP.beginPath();ctxP.moveTo(rx0,ay);ctxP.lineTo(ox,ay);ctxP.stroke();
-  ctxP.fillStyle='#0D9488';
-  [[rx0,1],[ox,-1]].forEach(([x,s])=>{ctxP.beginPath();ctxP.moveTo(x,ay);ctxP.lineTo(x+s*6*DPR,ay-4*DPR);ctxP.lineTo(x+s*6*DPR,ay+4*DPR);ctxP.closePath();ctxP.fill();});
-  ctxP.font=`600 ${11*DPR}px 'JetBrains Mono'`;ctxP.textAlign='center';
-  ctxP.fillText(`d = ${d.toFixed(2)} m`, (rx0+ox)/2, ay+14*DPR);
+  ctxP.fillStyle='#00838F';
+  [[rx0,1],[ox,-1]].forEach(([x,s])=>{ctxP.beginPath();ctxP.moveTo(x,ay);ctxP.lineTo(x+s*8*DPR,ay-5*DPR);ctxP.lineTo(x+s*8*DPR,ay+5*DPR);ctxP.closePath();ctxP.fill();});
+  ctxP.font=`600 ${11*DPR}px 'Inter', sans-serif`;ctxP.textAlign='center';
+  ctxP.fillText(`d = ${d.toFixed(2)} m`, (rx0+ox)/2, ay+18*DPR);
   ctxP.restore();
 
+  // ── Velocity Space ───────────────────────────────────────────────────
   ctxV.clearRect(0,0,Wv,Hv);
-  gridAxes(ctxV,Tv,VL,[-5,-4,-3,-2,-1,0,1,2],[-3,-2,-1,0,1,2,3],'ṽ_rel,x [m/s]','ṽ_rel,y [m/s]',Wv,Hv,PL,PR,PT,PB);
+  ctxV.fillStyle='#FFFFFF'; ctxV.fillRect(0,0,Wv,Hv);
+  gridAxes(ctxV,Tv,VL,[-5,-4,-3,-2,-1,0,1,2],[-3,-2,-1,0,1,2,3],'Relative Velocity X (m/s)','Relative Velocity Y (m/s)',Wv,Hv,PL,PR,PT,PB);
 
   const lam = KL*d/vrel, mu = KM*d;
   const dLam = kappa/(GAM*AMAX*vrel);
@@ -556,13 +340,13 @@ function render(kappa, vrel, d){
   const N=500, dpx=[], dpy=[], arx=[], ary=[];
   for(let i=0;i<=N;i++){
     const vy=VL.ymin+i/N*(VL.ymax-VL.ymin);
-    const vxd=-lam *vy*vy-mu, vxa=-lam_s*vy*vy-mu_s;
+    const vxd=-lam  *vy*vy-mu,   vxa=-lam_s*vy*vy-mu_s;
     if(vxd>=VL.xmin&&vxd<=VL.xmax){dpx.push(vxd);dpy.push(vy);}
     if(vxa>=VL.xmin&&vxa<=VL.xmax){arx.push(vxa);ary.push(vy);}
   }
 
   if(dpx.length>1){
-    ctxV.save();ctxV.fillStyle='rgba(217,119,6,0.08)';
+    ctxV.save();ctxV.fillStyle='rgba(244,114,92,0.07)';
     ctxV.beginPath();ctxV.moveTo(Tv.x(dpx[0]),Tv.y(dpy[0]));
     for(let i=1;i<dpx.length;i++)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
     ctxV.lineTo(Tv.x(VL.xmin),Tv.y(dpy[dpy.length-1]));
@@ -571,7 +355,7 @@ function render(kappa, vrel, d){
   }
 
   if(dpx.length>1&&arx.length>1){
-    ctxV.save();ctxV.fillStyle='rgba(37,99,235,0.08)';
+    ctxV.save();ctxV.fillStyle='rgba(20,184,166,0.07)';
     ctxV.beginPath();ctxV.moveTo(Tv.x(arx[0]),Tv.y(ary[0]));
     for(let i=1;i<arx.length;i++)ctxV.lineTo(Tv.x(arx[i]),Tv.y(ary[i]));
     for(let i=dpx.length-1;i>=0;i--)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
@@ -579,18 +363,23 @@ function render(kappa, vrel, d){
   }
 
   if(dpx.length>1){
-    ctxV.save();ctxV.strokeStyle='#D97706';ctxV.lineWidth=2*DPR;
+    ctxV.save();ctxV.strokeStyle='#F4725C';ctxV.lineWidth=2.5*DPR;ctxV.setLineDash([]);ctxV.lineCap='round';
     ctxV.beginPath();ctxV.moveTo(Tv.x(dpx[0]),Tv.y(dpy[0]));
     for(let i=1;i<dpx.length;i++)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
     ctxV.stroke();ctxV.restore();
   }
 
   if(arx.length>1){
-    ctxV.save();ctxV.strokeStyle='#2563EB';ctxV.lineWidth=2.5*DPR;
+    ctxV.save();ctxV.strokeStyle='#14B8A6';ctxV.lineWidth=3.5*DPR;ctxV.setLineDash([]);ctxV.lineCap='round';
     ctxV.beginPath();ctxV.moveTo(Tv.x(arx[0]),Tv.y(ary[0]));
     for(let i=1;i<arx.length;i++)ctxV.lineTo(Tv.x(arx[i]),Tv.y(ary[i]));
     ctxV.stroke();ctxV.restore();
   }
+
+  [[Tv.x(-mu),Tv.y(0),'#F4725C'],[Tv.x(-mu_s),Tv.y(0),'#14B8A6']].forEach(([x,y,c])=>{
+    ctxV.save();ctxV.fillStyle=c;ctxV.strokeStyle='white';ctxV.lineWidth=1.5*DPR;
+    ctxV.beginPath();ctxV.arc(x,y,5*DPR,0,Math.PI*2);ctxV.fill();ctxV.stroke();ctxV.restore();
+  });
 
   const vtx_c=F.vrx, vty_c=F.vry;
   if(vtx_c>=VL.xmin&&vtx_c<=VL.xmax&&vty_c>=VL.ymin&&vty_c<=VL.ymax){
@@ -598,32 +387,44 @@ function render(kappa, vrel, d){
     ctxV.save();
     ctxV.translate(px,py);
     ctxV.rotate(Math.PI/4);
-    ctxV.fillStyle='#A855F7';
-    ctxV.strokeStyle='#FFFFFF';
-    ctxV.lineWidth=1.5*DPR;
-    ctxV.beginPath();ctxV.rect(-5*DPR,-5*DPR,10*DPR,10*DPR);
-    ctxV.fill();ctxV.stroke();
+    ctxV.fillStyle='#7C3AED';
+    ctxV.strokeStyle='white';
+    ctxV.lineWidth=2*DPR;
+    ctxV.beginPath();
+    ctxV.rect(-6*DPR,-6*DPR,12*DPR,12*DPR);
+    ctxV.fill();
+    ctxV.stroke();
     ctxV.restore();
-
+    ctxV.save();
+    ctxV.strokeStyle='#7C3AED';
+    ctxV.lineWidth=1.8*DPR;
+    ctxV.beginPath();
+    ctxV.arc(px,py,14*DPR,0,Math.PI*2);
+    ctxV.stroke();
     const hs_now=vtx_c+lam_s*vty_c*vty_c+mu_s;
     const safe=hs_now>=0;
     const pill=document.getElementById('statusPill');
     if(pill){
       if(safe){
         pill.textContent=`🟢 SAFE • Margin +${hs_now.toFixed(2)}`;
-        pill.style.background='#ECFDF5';
-        pill.style.color='#047857';
-        pill.style.border='1px solid #A7F3D0';
+        pill.style.background='#ECFDF5';document.getElementById('statusCard').style.borderLeftColor='#16A34A';
+        pill.style.color='#166534';
       }else{
         pill.textContent=`🔴 UNSAFE • Margin ${hs_now.toFixed(2)}`;
-        pill.style.background='#FEF2F2';
-        pill.style.color='#B91C1C';
-        pill.style.border='1px solid #FECACA';
+        pill.style.background='#FEF2F2';document.getElementById('statusCard').style.borderLeftColor='#DC2626';
+        pill.style.color='#991B1B';
       }
     }
+    ctxV.restore();
   }
+
+  ctxV.save();ctxV.font=`500 ${11*DPR}px 'Inter', sans-serif`;ctxV.textAlign='center';
+  ctxV.fillStyle='rgba(80,80,80,0.55)';ctxV.fillText('safe',Tv.x(0.5),Tv.y(2.8));
+  ctxV.fillStyle='rgba(200,60,10,0.55)';ctxV.fillText('unsafe',Tv.x(-4.0),Tv.y(2.8));
+  ctxV.restore();
 }
 
+// ── Slider handling ────────────────────────────────────────────────────
 function pct(el){return((+el.value-+el.min)/(+el.max-+el.min)*100).toFixed(1)+'%';}
 let raf=null;
 function onInput(){
