@@ -177,6 +177,48 @@ img{
 }
 
 /* ===================================================== */
+/* Interactive Visualization */
+/* ===================================================== */
+
+.interactive-card{
+
+    background:white;
+
+    border:1px solid #e6e6e6;
+
+    border-radius:16px;
+
+    padding:1.5rem;
+
+    box-shadow:0 8px 28px rgba(0,0,0,0.05);
+
+    margin-top:2rem;
+
+}
+
+.interactive-frame{
+
+    width:100%;
+
+    height:940px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:white;
+
+}
+
+.interactive-frame:hover{
+
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+
+    transition:0.2s;
+
+}
+
+/* ===================================================== */
 /* Experimental Evaluation */
 /* ===================================================== */
 
