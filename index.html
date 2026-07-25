@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+
 <head>
     <!-- MathJax -->
     <script>
@@ -16,9 +16,9 @@
     </script>
     
     <script
-    id="MathJax-script"
-    async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
     </script>
 
     <meta charset="UTF-8">
@@ -126,10 +126,10 @@
                 </p>
             </div>
 
-            <!-- Text (Selectively Highlighted) -->
+            <!-- Text -->
             <div class="column is-6">
                 <p class="content is-medium has-text-justified">
-                    We consider a <strong>bicycle-model robot</strong> navigating toward a goal in an environment populated with <strong>independently maneuvering unicycle obstacles</strong>. Unlike constant-velocity obstacles, these agents may continuously change their speed and heading, producing time-varying relative motion. The robot must generate <span class="highlight">collision-free trajectories</span> while respecting nonholonomic constraints and reasoning about the relative state of nearby obstacles in real time.
+                    We consider a <strong>bicycle-model robot</strong> navigating toward a goal in an environment populated with <strong>independently maneuvering unicycle obstacles</strong>. Unlike constant-velocity obstacles, these agents may continuously change their speed and heading, producing time-varying relative motion. The robot must generate <span class="highlight">collision-free trajectories</span> while respecting nonholonomic dynamics and reasoning about nearby obstacles in real time.
                 </p>
             </div>
         </div>
@@ -140,17 +140,10 @@
 <section class="section section-compact" id="motivation">
     <div class="container is-max-desktop">
         <div class="interactive-card">
-            <div class="level is-mobile mb-3">
-                <div class="level-left">
-                    <div>
-                        <h3 class="title is-4 mb-1">Why Does Conventional DPCBF Fail?</h3>
-                        <p class="subtitle is-6 mb-0">
-                            Observe how obstacle acceleration and turning introduce unmodelled disturbance dynamics that invalidate the safety certificate.
-                        </p>
-                    </div>
-                </div>
+            <div class="level is-mobile mb-2">
+                <div class="level-left"></div>
                 <div class="level-right">
-                    <a href="static/interactive/motivation.html" target="_blank" class="button is-light is-rounded">
+                    <a href="static/interactive/motivation.html" target="_blank" class="button is-light is-small is-rounded">
                         <span class="icon"><i class="fas fa-expand"></i></span>
                         <span>Fullscreen</span>
                     </a>
@@ -159,7 +152,7 @@
 
             <iframe src="static/interactive/motivation.html" class="interactive-frame" loading="lazy"></iframe>
 
-            <p class="figure-caption mt-2">
+            <p class="figure-caption mt-3">
                 <strong>Interactive illustration of the failure mechanism.</strong> Adjust obstacle acceleration <span class="highlight">$a_{\rm obs}$</span> and turning rate <span class="highlight">$\omega_{\rm obs}$</span> to observe how the disturbance $\Delta(t)$ causes the true barrier dynamics to deviate from nominal predictions.
             </p>
         </div>
@@ -167,13 +160,15 @@
 </section>
 
 <!-- HIGHLIGHTED CENTRAL QUESTION CALLOUT -->
-<section class="section py-2">
+<section class="section py-3">
     <div class="container is-max-desktop">
         <div class="question-callout">
-            <p class="uppercase-label mb-1">
-                <i class="fas fa-lightbulb icon-accent mr-1"></i> Central Research Question
-            </p>
-            <h3 class="title callout-question">
+            <div class="has-text-centered mb-2">
+                <span class="uppercase-label">
+                    <i class="fas fa-lightbulb icon-accent mr-1"></i> Central Research Question
+                </span>
+            </div>
+            <h3 class="callout-question">
                 "Can safety guarantees be recovered when surrounding obstacles are allowed to maneuver within known physical limits?"
             </h3>
         </div>
@@ -190,29 +185,24 @@
 
         <!-- Interactive Visualization Card -->
         <div class="interactive-card">
-            <div class="card-header-flex mb-3">
-                <div class="card-title-group">
-                    <h3 class="title is-4 mb-1">Interactive Visualization</h3>
-                    <p class="subtitle is-6 mb-0">
-                        Explore how obstacle maneuverability contracts the certified safe set in both physical and velocity spaces.
-                    </p>
-                </div>
-                <div class="card-action-group">
-                    <a href="static/interactive/ar_dpcbf_variation_embed.html" target="_blank" class="button is-light is-rounded">
+            <div class="level is-mobile mb-2">
+                <div class="level-left"></div>
+                <div class="level-right">
+                    <a href="static/interactive/ar_dpcbf_variation_embed.html" target="_blank" class="button is-light is-small is-rounded">
                         <span class="icon"><i class="fas fa-expand"></i></span>
                         <span>Fullscreen</span>
                     </a>
                 </div>
             </div>
 
-            <iframe src="static/interactive/ar_dpcbf_variation_embed.html" class="interactive-frame" loading="lazy"></iframe>
+            <iframe src="static/interactive/ar_dpcbf_variation_embed.html" class="interactive-frame frame-large" loading="lazy"></iframe>
 
-            <p class="figure-caption mt-2">
+            <p class="figure-caption mt-3">
                 <strong>Interactive AR-DPCBF visualization.</strong> Adjust capability $\kappa$, relative speed $||\tilde{\mathbf v}_{rel}||$, distance $d$, and heading $\theta$ to observe how bounded maneuverability contracts both safe sets.
             </p>
         </div>
 
-        <!-- Explanation Paragraphs (Cleaned Highlights) -->
+        <!-- Explanation Paragraphs -->
         <div class="content is-medium mt-5">
             <p>
                 The fundamental limitation of conventional DPCBF is that it certifies safety only for the <strong>nominal obstacle motion model</strong>. Once an obstacle accelerates or turns, the true barrier dynamics deviate from the nominal prediction, leading to silent safety failures.
