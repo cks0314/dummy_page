@@ -43,17 +43,6 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="static/css/style.css">
-
-    <!-- Scoped override: shrink result-card media (GIFs + figures) to 25% of original size -->
-    <style>
-        .result-card .result-gif {
-            max-width: 25%;
-            width: 25%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
 </head>
 
 <body>
@@ -284,13 +273,13 @@
 
         <div class="result-card mb-6">
             <h3 class="title is-4 mb-3">Safety Scales With Adversary Count</h3>
-            <img src="static/images/fig_adversary_sweep.png" alt="Violation and collision rate versus number of adversaries" class="result-gif">
+            <img src="static/images/fig_adversary_sweep.png" alt="Violation and collision rate versus number of adversaries" class="result-figure">
             <p class="figure-caption mt-3">Barrier-violation rate (a) and collision rate (b) as the number of adversarial obstacles increases at fixed density $N=15$. AR-DPCBF variants substantially reduce both metrics across the sweep, with buffer AR-DPCBF performing best throughout.</p>
         </div>
 
         <div class="result-card mb-6">
             <h3 class="title is-4 mb-3">Robust Across Capability, Lower Control Effort</h3>
-            <img src="static/images/k_sweep_cost.png" alt="Barrier violation rate versus adversary capability and QP cost comparison" class="result-gif">
+            <img src="static/images/k_sweep_cost.png" alt="Barrier violation rate versus adversary capability and QP cost comparison" class="result-figure">
             <p class="figure-caption mt-3">(a) Barrier-violation rate versus adversary capability $\kappa$: the AR-DPCBF variants remain in a low-violation cluster well separated from DPCBF, even as $\kappa$ approaches the validity edge $\kappa = c_{min}$. (b) Despite this added robustness, the AR-DPCBF variants require lower median QP cost than the reactive DPCBF baseline.</p>
         </div>
     </div>
