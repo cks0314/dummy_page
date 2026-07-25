@@ -43,6 +43,17 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="static/css/style.css">
+
+    <!-- Scoped override: shrink result-card media (GIFs + figures) to 25% of original size -->
+    <style>
+        .result-card .result-gif {
+            max-width: 25%;
+            width: 25%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 
 <body>
@@ -252,18 +263,18 @@
 
         <div class="result-card mb-6">
             <h3 class="title is-4 mb-3">Conventional DPCBF Fails Under Obstacle Maneuvers</h3>
-            <img src="static/gifs/demo_compare_13_status.gif" alt="Comparison 1" class="result-gif">
+            <img src="static/gifs/demo_compare_13.gif" alt="Comparison 1" class="result-gif">
             <p class="figure-caption mt-3">Conventional DPCBF fails under obstacle maneuvers, whereas AR-DPCBF variants safely reach the goal.</p>
         </div>
 
         <div class="result-card mb-6">
             <h3 class="title is-4 mb-3">Soft Barrier Relaxation Preserves Feasibility</h3>
-            <img src="static/gifs/demo_compare_softbuf_status.gif" alt="Comparison 2" class="result-gif">
+            <img src="static/gifs/demo_compare_softbuf.gif" alt="Comparison 2" class="result-gif">
             <p class="figure-caption mt-3">Hard AR-DPCBF can become overly conservative; proposed soft formulations preserve feasibility.</p>
         </div>
         <div class="result-card mb-6">
             <h3 class="title is-4 mb-3">Buffer's Hubber Penalty Improves Feasibility</h3>
-            <img src="static/gifs/demo_compare_bufonly_status.gif" alt="Comparison 2" class="result-gif">
+            <img src="static/gifs/demo_compare_bufonly.gif" alt="Comparison 2" class="result-gif">
             <p class="figure-caption mt-3">Buffer AR-DPCBF preserves the nominal safety constraint while relaxing only the adversarial margin.</p>
         </div>
 
