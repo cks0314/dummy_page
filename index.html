@@ -274,102 +274,113 @@
 </section>
 
 <!-- ===================================================== -->
-<!-- THE PROBLEM -->
-<!-- ===================================================== -->
-
-<!-- ===================================================== -->
 <!-- Interactive Motivation -->
 <!-- ===================================================== -->
 
-<div class="interactive-card mt-6">
+<section class="section" id="motivation">
 
-    <div class="level is-mobile mb-4">
+    <div class="container is-max-desktop">
 
-        <div class="level-left">
+        <div class="interactive-card">
 
-            <div>
+            <div class="level is-mobile mb-4">
 
-                <h3 class="title is-4 mb-2">
-                    Why Does Conventional DPCBF Fail?
-                </h3>
+                <div class="level-left">
 
-                <p class="subtitle is-6">
+                    <div>
 
-                    Explore how obstacle acceleration and turning introduce an
-                    unmodelled disturbance that causes the true barrier dynamics
-                    to deviate from the nominal prediction, eventually
-                    invalidating the safety certificate.
+                        <h3 class="title is-4 mb-2">
+                            Why Does Conventional DPCBF Fail?
+                        </h3>
 
-                </p>
+                        <p class="subtitle is-6">
+
+                            Explore how obstacle acceleration and turning introduce an
+                            unmodelled disturbance that causes the true barrier dynamics
+                            to deviate from the nominal prediction, eventually
+                            invalidating the safety certificate.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="level-right">
+
+                    <a
+                        href="static/interactive/motivation.html"
+                        target="_blank"
+                        class="button is-light is-rounded">
+
+                        <span class="icon">
+                            <i class="fas fa-expand"></i>
+                        </span>
+
+                        <span>Fullscreen</span>
+
+                    </a>
+
+                </div>
 
             </div>
 
-        </div>
+            <iframe
+                src="static/interactive/motivation.html"
+                class="interactive-frame"
+                loading="lazy">
+            </iframe>
 
-        <div class="level-right">
+            <p class="figure-caption mt-3">
 
-            <a
-                href="static/interactive/motivation.html"
-                target="_blank"
-                class="button is-light is-rounded">
+                <strong>Interactive illustration of the failure mechanism.</strong>
+                Adjust the obstacle acceleration
+                <span class="highlight">$a_{\rm obs}$</span>
+                and turning rate
+                <span class="highlight">$\omega_{\rm obs}$</span>
+                to observe how the neglected disturbance
+                <span class="highlight">$\Delta(t)$</span>
+                causes the true barrier dynamics to deviate from the nominal prediction.
+                Although the nominal DPCBF constraint remains satisfied, the true barrier
+                can become negative, resulting in a collision and a silent failure of the
+                safety certificate.
 
-                <span class="icon">
-                    <i class="fas fa-expand"></i>
-                </span>
-
-                <span>Fullscreen</span>
-
-            </a>
+            </p>
 
         </div>
 
     </div>
 
-    <iframe
-        src="static/interactive/motivation.html"
-        class="interactive-frame"
-        loading="lazy">
-    </iframe>
+</section>
 
-    <p class="figure-caption mt-3">
-
-        <strong>Interactive illustration of the failure mechanism.</strong>
-        Adjust the obstacle acceleration
-        <span class="highlight">$a_{\rm obs}$</span>
-        and turning rate
-        <span class="highlight">$\omega_{\rm obs}$</span>
-        to observe how the neglected disturbance
-        <span class="highlight">$\Delta(t)$</span>
-        causes the true barrier dynamics to deviate from the nominal prediction.
-        Although the nominal DPCBF constraint remains satisfied, the true barrier
-        can become negative, resulting in a collision and a silent failure of the
-        safety certificate.
-
-    </p>
-
-</div>
-
-
-    <!-- ===================================================== -->
+<!-- ===================================================== -->
 <!-- Transition -->
 <!-- ===================================================== -->
 
-<p class="content is-medium has-text-centered problem-transition">
+<section class="section pt-0">
 
-    <strong>
-        This motivates the central question:
-    </strong>
+    <div class="container is-max-desktop">
 
-    <br><br>
+        <p class="content is-medium has-text-centered problem-transition">
 
-    <em>
+            <strong>
+                This motivates the central question:
+            </strong>
 
-        Can safety guarantees be recovered when surrounding obstacles are
-        allowed to maneuver within known physical limits?
+            <br><br>
 
-    </em>
+            <em>
 
-</p>
+                Can safety guarantees be recovered when surrounding obstacles are
+                allowed to maneuver within known physical limits?
+
+            </em>
+
+        </p>
+
+    </div>
+
+</section>
 
 <!-- ===================================================== -->
 <!-- PROPOSED ALGORITHM: AR-DPCBF -->
@@ -379,9 +390,7 @@
 
     <div class="container is-max-desktop">
 
-        <!-- ===================================================== -->
         <!-- Title -->
-        <!-- ===================================================== -->
 
         <h2 class="title is-3 has-text-centered">
             Proposed Algorithm: AR-DPCBF
@@ -396,10 +405,7 @@
 
         </p>
 
-
-        <!-- ===================================================== -->
         <!-- Interactive Visualization -->
-        <!-- ===================================================== -->
         
         <div class="interactive-card mt-6">
         
@@ -427,7 +433,7 @@
                 <div class="level-right">
         
                     <a
-                        href="interactive/ar_dpcbf_variation_embed_updated.html"
+                        href="interactive/ar_dpcbf_variation_embed.html"
                         target="_blank"
                         class="button is-light is-rounded">
         
@@ -444,7 +450,7 @@
             </div>
         
             <iframe
-                src="static/interactive/ar_dpcbf_variation_embed_updated.html"
+                src="static/interactive/ar_dpcbf_variation_embed.html"
                 class="interactive-frame"
                 loading="lazy">
             </iframe>
@@ -467,10 +473,7 @@
         
         </div>
 
-
-        <!-- ===================================================== -->
         <!-- Explanation -->
-        <!-- ===================================================== -->
 
         <div class="content is-medium mt-6">
 
@@ -523,10 +526,7 @@
 
         </div>
 
-
-        <!-- ===================================================== -->
         <!-- Three Key Ideas -->
-        <!-- ===================================================== -->
 
         <div class="columns is-variable is-5 mt-6">
 
@@ -554,7 +554,6 @@
 
             </div>
 
-
             <div class="column">
 
                 <div class="box insight-box">
@@ -577,7 +576,6 @@
                 </div>
 
             </div>
-
 
             <div class="column">
 
@@ -631,10 +629,7 @@
 
         </p>
 
-
-        <!-- ===================================================== -->
         <!-- Result 1 -->
-        <!-- ===================================================== -->
 
         <div class="result-card">
 
@@ -659,10 +654,7 @@
 
         </div>
 
-
-        <!-- ===================================================== -->
         <!-- Result 2 -->
-        <!-- ===================================================== -->
 
         <div class="result-card">
 
@@ -687,10 +679,7 @@
 
         </div>
 
-
-        <!-- ===================================================== -->
         <!-- Result 3 -->
-        <!-- ===================================================== -->
 
         <div class="result-card">
 
@@ -715,11 +704,7 @@
 
         </div>
 
-    </div>
-
-<!-- ===================================================== -->
         <!-- Quantitative Results -->
-        <!-- ===================================================== -->
 
         <div class="mt-6">
 
@@ -736,7 +721,6 @@
             </p>
 
         </div>
-
 
         <div class="columns is-variable is-6">
 
@@ -765,7 +749,6 @@
 
             </div>
 
-
             <!-- Plot 2 -->
 
             <div class="column">
@@ -792,13 +775,9 @@
 
         </div>
 
-    
+    </div>
 
 </section>
-
-
-
-    
 
 <!-- ===================================================== -->
 <!-- ABSTRACT -->
