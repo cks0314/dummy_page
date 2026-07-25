@@ -477,29 +477,73 @@ $$
 
 
         <!-- ===================================================== -->
-        <!-- Animation -->
+        <!-- Interactive Visualization -->
         <!-- ===================================================== -->
-
-        <div class="has-text-centered">
-
-            <img
-                src="static/gifs/variation.gif"
-                alt="Adaptive contraction of AR-DPCBF"
-                class="insight-animation">
-
-            <p class="figure-caption">
-
-                <strong>Adaptive contraction of the safety boundary.</strong>
-                As the obstacle maneuverability
-                <span class="highlight">$\kappa$</span>
-                increases, the conventional DPCBF unsafe set (orange) is
-                conservatively contracted to produce the AR-DPCBF unsafe set
-                (green). Simultaneously, the admissible relative-velocity
-                boundary contracts in velocity space, reserving sufficient
-                safety margin to compensate for worst-case obstacle maneuvers.
-
+        
+        <div class="interactive-card mt-6">
+        
+            <div class="level is-mobile mb-3">
+        
+                <div class="level-left">
+        
+                    <div>
+        
+                        <h3 class="title is-4 mb-2">
+                            Interactive Visualization
+                        </h3>
+        
+                        <p class="subtitle is-6 mb-0">
+        
+                            Explore how obstacle maneuverability contracts the certified
+                            safe set in both physical and velocity spaces.
+        
+                        </p>
+        
+                    </div>
+        
+                </div>
+        
+                <div class="level-right">
+        
+                    <a
+                        href="interactive/ar_dpcbf.html"
+                        target="_blank"
+                        class="button is-light is-rounded">
+        
+                        <span class="icon">
+                            <i class="fas fa-expand"></i>
+                        </span>
+        
+                        <span>Fullscreen</span>
+        
+                    </a>
+        
+                </div>
+        
+            </div>
+        
+            <iframe
+                src="interactive/ar_dpcbf.html"
+                class="interactive-frame"
+                loading="lazy">
+            </iframe>
+        
+            <p class="figure-caption mt-3">
+        
+                <strong>Interactive AR-DPCBF visualization.</strong>
+                Adjust the obstacle capability
+                <span class="highlight">$\kappa$</span>,
+                relative speed
+                <span class="highlight">$||\tilde{\mathbf v}_{rel}||$</span>,
+                robot-obstacle distance
+                <span class="highlight">$d$</span>,
+                and relative heading
+                <span class="highlight">$\theta$</span>
+                to observe how bounded obstacle maneuverability contracts both the
+                physical unsafe set and the admissible relative-velocity boundary.
+        
             </p>
-
+        
         </div>
 
 
