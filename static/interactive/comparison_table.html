@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Controller Variants</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lato-font@3.0.0/css/lato-font.min.css">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css');
+
+        .cmr-font { font-family: "Computer Modern Serif", "CMU Serif", serif; }
+
+        body {
+            padding: 1.5rem 1.25rem;
+            background: #eef1f7;
+        }
+
+        .comparison-card {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 1.5rem 1.8rem 1.6rem 1.8rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(30, 41, 59, 0.07);
+            border: 1px solid #eef1f5;
+        }
+
+        .header-block { text-align: center; margin-bottom: 1.2rem; }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #94a3b8;
+            display: block;
+            line-height: 1.4;
+        }
+
+        .header-block h3 {
+            font-size: 1.55rem;
+            font-weight: 700;
+            line-height: 1.5;
+            margin: 0;
+            background: linear-gradient(90deg, #2563eb 0%, #7c3aed 55%, #059669 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .header-block p {
+            font-size: 0.92rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin: 0.2rem 0 0 0;
+        }
+
+        :root {
+            --c-hj: #64748b;      /* h_j, lambda, mu (nominal) */
+            --c-hstar: #2563eb;   /* h_j*, lambda*, mu* (robust) */
+            --c-jtr: #334155;     /* J_tr (shared) */
+            --c-jsoft: #059669;   /* J_soft */
+            --c-jbuf: #7c3aed;    /* J_buf */
+            --c-method: #0f172a;
+            --c-constraint: #2563eb;
+            --c-objective: #d97706;
+            --c-feasibility: #059669;
+            --c-guarantee: #7c3aed;
+        }
+
+        /* Table */
+        .table.is-elegant {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 4px;
+            margin-bottom: 0 !important;
+        }
+
+        .table.is-elegant th {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.86rem;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 6px 10px 10px 10px;
+            text-align: center;
+        }
+
+        .table.is-elegant th.col-method { text-align: left; color: var(--c-method); }
+        .table.is-elegant th.col-constraint { color: var(--c-constraint); }
+        .table.is-elegant th.col-objective { color: var(--c-objective); }
+        .table.is-elegant th.col-feasibility { color: var(--c-feasibility); }
+        .table.is-elegant th.col-guarantee { color: var(--c-guarantee); }
+
+        .table.is-elegant td {
+            padding: 8px 10px;
+            vertical-align: middle;
+            text-align: center;
+            color: #334155;
+            font-size: 0.98rem;
+            background-color: #fafbfc;
+        }
+
+        .table.is-elegant tbody tr td:first-child { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
+        .table.is-elegant tbody tr td:last-child { border-top-right-radius: 6px; border-bottom-right-radius: 6px; }
+
+        .method-cell { display: flex; align-items: center; gap: 8px; }
+        .method-bar { width: 3px; height: 17px; border-radius: 2px; flex-shrink: 0; }
+        .bar-dpcbf { background-color: var(--c-hj); }
+        .bar-hard { background-color: var(--c-hstar); }
+        .bar-soft { background-color: var(--c-jsoft); }
+        .bar-buffer { background-color: var(--c-jbuf); }
+
+        .tag { font-size: 0.78rem !important; padding: 0.3em 0.65em !important; height: auto !important; }
+
+        .section-label {
+            font-family: "Lato", sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            margin: 0.85rem 0 0.4rem 0.1rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            margin: 0.95rem 0 0.2rem 0;
+        }
+
+        /* Inline equation strip */
+        .eq-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem 1.8rem;
+            padding: 0.4rem 0.2rem;
+            font-size: 0.98rem;
+        }
+
+        .eq-item { white-space: nowrap; }
+
+        .notification {
+            padding: 0.75rem 0.95rem !important;
+            font-size: 0.88rem !important;
+            margin-top: 0.85rem !important;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="comparison-card">
+
+    <div class="header-block cmr-font">
+        <span class="eyebrow">AR-DPCBF &nbsp;&middot;&nbsp; Table I</span>
+        <h3>Controller Variants</h3>
+        <p>Comparison of the four controller formulations proposed and evaluated in this work.</p>
+    </div>
+
+    <div class="table-container">
+        <table class="table is-elegant cmr-font">
+            <thead>
+                <tr>
+                    <th class="col-method">Method</th>
+                    <th class="col-constraint">Constraint</th>
+                    <th class="col-objective">Objective</th>
+                    <th class="col-feasibility">Feasibility</th>
+                    <th class="col-guarantee">Guarantee</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">
+                        <div class="method-cell"><span class="method-bar bar-dpcbf"></span><strong>DPCBF</strong></div>
+                    </td>
+                    <td>\(\color{#64748b}{h_j}\)</td>
+                    <td>\(\color{#334155}{J_{\text{tr}}}\)</td>
+                    <td><span class="tag is-success is-light">Full</span></td>
+                    <td>CBF</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">
+                        <div class="method-cell"><span class="method-bar bar-hard"></span><strong>Hard AR-DPCBF</strong></div>
+                    </td>
+                    <td>\(\color{#2563eb}{h_j^*}\)</td>
+                    <td>\(\color{#334155}{J_{\text{tr}}}\)</td>
+                    <td><span class="tag is-warning is-light">Reduced</span></td>
+                    <td>A-CBF</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">
+                        <div class="method-cell"><span class="method-bar bar-soft"></span><strong>Soft AR-DPCBF</strong></div>
+                    </td>
+                    <td>\(\color{#64748b}{h_j}\)</td>
+                    <td>\(\color{#334155}{J_{\text{tr}}} + \color{#059669}{J_{\text{soft}}}\)</td>
+                    <td><span class="tag is-success is-light">Full</span></td>
+                    <td>Best-effort</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">
+                        <div class="method-cell"><span class="method-bar bar-buffer"></span><strong>Buffer Soft AR-DPCBF</strong></div>
+                    </td>
+                    <td>\(\color{#64748b}{h_j}\)</td>
+                    <td>\(\color{#334155}{J_{\text{tr}}} + \color{#7c3aed}{J_{\text{buf}}}\)</td>
+                    <td><span class="tag is-success is-light">Full</span></td>
+                    <td>Best-effort</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="section-label cmr-font">Definitions</p>
+    <div class="eq-row cmr-font">
+        <span class="eq-item">\( \color{#64748b}{h_j} = \tilde v_{\text{rel},x} + \lambda\,\tilde v_{\text{rel},y}^2 + \mu \)</span>
+        <span class="eq-item">\( \color{#2563eb}{h_j^*} = \tilde v_{\text{rel},x} + \lambda^*\,\tilde v_{\text{rel},y}^2 + \mu^* \)</span>
+    </div>
+    <div class="eq-row cmr-font">
+        <span class="eq-item">\( \color{#64748b}{\lambda = k_\lambda \tfrac{d}{\|v_{\text{rel}}\|}}, \ \ \color{#64748b}{\mu = k_\mu d} \)</span>
+        <span class="eq-item">\( \color{#2563eb}{\lambda^* = \lambda-\Delta_\lambda}, \ \ \color{#2563eb}{\mu^* = \mu-\Delta_\mu} \)</span>
+        <span class="eq-item">\( \Delta_\lambda = \tfrac{\kappa}{\gamma a_{\max}\|v_{\text{rel}}\|}, \ \ \Delta_\mu = \tfrac{\kappa d}{\gamma\|v_{\text{rel}}\|} \)</span>
+    </div>
+    <div class="eq-row cmr-font">
+        <span class="eq-item">\( \color{#334155}{J_{\text{tr}} = \|u-u_{\text{ref}}\|^2} \)</span>
+        <span class="eq-item">\( \color{#059669}{J_{\text{soft}} = \rho\textstyle\sum_j \max(0,-g_j)^2} \)</span>
+        <span class="eq-item">\( \color{#7c3aed}{J_{\text{buf}} = \rho\textstyle\sum_j \phi(g_j;\varepsilon_b)} \)</span>
+    </div>
+
+    <div class="notification is-light cmr-font" style="background-color: #f8fafc; border-left: 4px solid #cbd5e1; color: #334155;">
+        <strong>Note.</strong> Hard AR-DPCBF enforces \(\color{#2563eb}{h_j^*} \geq 0\) as a hard
+        constraint. Since \(\lambda^* \le \lambda\) and \(\mu^* \le \mu\), the adversarial safe set
+        is a strict subset of the nominal one; the soft variants retain the nominal feasible set
+        \(\{\color{#64748b}{h_j} \geq 0\}\) and move the adversarial condition \(g_j \geq 0\) into
+        the objective as a penalty.
+    </div>
+
+</div>
+
+</body>
+</html>
