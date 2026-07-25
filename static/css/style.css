@@ -15,7 +15,11 @@ body {
 
 /* Base Section & Spacing Control */
 .section-compact {
-    padding: 2rem 1.5rem !important;
+    padding: 1.1rem 1.5rem !important;
+}
+
+.hero-body {
+    padding: 1.5rem 1.5rem;
 }
 
 .title {
@@ -180,14 +184,14 @@ pre {
 .footer {
     background: #ffffff;
     border-top: 1px solid #f3f4f6;
-    padding: 2rem;
+    padding: 1.25rem;
     color: #9ca3af;
 }
 
 /* Responsive Adjustments */
 @media screen and (max-width: 850px) {
     .section-compact {
-        padding: 1.5rem 1rem !important;
+        padding: 1rem 1rem !important;
     }
     
     .interactive-frame {

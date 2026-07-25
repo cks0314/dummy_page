@@ -139,7 +139,7 @@
 <!-- MOTIVATION TITLE & INTERACTIVE MOTIVATION -->
 <section class="section section-compact pt-5" id="motivation">
     <div class="container is-max-desktop">
-        <h2 class="title is-3 has-text-centered mb-5">Motivation</h2>
+        <h2 class="title is-3 has-text-centered mb-3">Motivation</h2>
         <div class="interactive-card">
             <div class="level is-mobile mb-2">
                 <div class="level-left"></div>
@@ -161,9 +161,9 @@
 </section>
 
 <!-- HIGHLIGHTED CENTRAL QUESTION CALLOUT -->
-<section class="section py-5">
+<section class="section py-3">
     <div class="container is-max-desktop">
-        <div class="question-callout py-5 my-4">
+        <div class="question-callout py-3 my-2">
             <div class="has-text-centered mb-3">
                 <span class="uppercase-label" style="color: #000000; font-size: 1.1rem;">
                     <i class="fas fa-lightbulb mr-2" style="color: #FFD700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);"></i> Central Research Question
@@ -179,8 +179,8 @@
 <!-- PROPOSED ALGORITHM: AR-DPCBF -->
 <section class="section section-compact py-6" id="insight">
     <div class="container is-max-desktop">
-        <h2 class="title is-3 has-text-centered mb-5" style="margin-top: 1.5rem;">Proposed Algorithm: AR-DPCBF</h2>
-        <p class="subtitle has-text-centered insight-subtitle mb-6" style="line-height: 1.6;">
+        <h2 class="title is-3 has-text-centered mb-3">Proposed Algorithm: AR-DPCBF</h2>
+        <p class="subtitle has-text-centered insight-subtitle mb-4" style="line-height: 1.6;">
             Instead of assuming constant obstacle velocity, <span class="highlight">AR-DPCBF models obstacle maneuverability explicitly</span> and analytically reserves the safety margin required under worst-case bounded maneuvers.
         </p>
 
@@ -204,7 +204,7 @@
         </div>
 
         <!-- Three Key Ideas -->
-        <div class="columns is-variable is-4 mt-5">
+        <div class="columns is-variable is-4 mt-3">
             <div class="column">
                 <div class="box insight-box p-5" style="background-color: rgba(129, 216, 208, 0.25);">
                     <h4 class="title is-5 mb-3"><i class="fas fa-user-shield text-accent mr-1"></i> Bounded Adversary</h4>
@@ -226,7 +226,7 @@
         </div>
 
         <!-- Controller Variants Table -->
-        <div class="interactive-card mt-5">
+        <div class="interactive-card mt-4">
             <div class="level is-mobile mb-2">
                 <div class="level-left"></div>
                 <div class="level-right">
@@ -245,39 +245,39 @@
 <!-- EXPERIMENTAL EVALUATION -->
 <section class="section section-compact py-6" id="results">
     <div class="container is-max-desktop">
-        <h2 class="title is-3 has-text-centered mb-5" style="margin-top: 1.5rem;">Experimental Evaluation</h2>
-        <p class="subtitle has-text-centered results-subtitle mb-6" style="line-height: 1.6;">
+        <h2 class="title is-3 has-text-centered mb-3">Experimental Evaluation</h2>
+        <p class="subtitle has-text-centered results-subtitle mb-4" style="line-height: 1.6;">
             Each scenario compares four controllers under identical obstacle realizations and adversarial maneuvers.
         </p>
 
-        <div class="result-card mb-6">
+        <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Conventional DPCBF Fails Under Obstacle Maneuvers</h3>
             <img src="static/gifs/demo_compare_13.gif" alt="Comparison 1" class="result-gif">
             <p class="figure-caption mt-3">Conventional DPCBF fails under obstacle maneuvers, whereas AR-DPCBF variants safely reach the goal.</p>
         </div>
 
-        <div class="result-card mb-6">
+        <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Soft Barrier Relaxation Preserves Feasibility</h3>
             <img src="static/gifs/demo_compare_softbuf.gif" alt="Comparison 2" class="result-gif">
             <p class="figure-caption mt-3">Hard AR-DPCBF can become overly conservative; proposed soft formulations preserve feasibility.</p>
         </div>
-        <div class="result-card mb-6">
+        <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Buffer's Hubber Penalty Improves Feasibility</h3>
             <img src="static/gifs/demo_compare_bufonly.gif" alt="Comparison 2" class="result-gif">
             <p class="figure-caption mt-3">Buffer AR-DPCBF preserves the nominal safety constraint while relaxing only the adversarial margin.</p>
         </div>
 
-        <p class="subtitle has-text-centered results-subtitle mt-6 mb-5" style="line-height: 1.6;">
+        <p class="subtitle has-text-centered results-subtitle mt-4 mb-3" style="line-height: 1.6;">
             Beyond qualitative demonstrations, controlled sweeps over adversary count and capability confirm the effect quantitatively.
         </p>
 
-        <div class="result-card mb-6">
+        <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Safety Scales With Adversary Count</h3>
             <img src="static/images/fig_adversary_sweep.png" alt="Violation and collision rate versus number of adversaries" class="result-figure">
             <p class="figure-caption mt-3">Barrier-violation rate (a) and collision rate (b) as the number of adversarial obstacles increases at fixed density $N=15$. AR-DPCBF variants substantially reduce both metrics across the sweep, with buffer AR-DPCBF performing best throughout.</p>
         </div>
 
-        <div class="result-card mb-6">
+        <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Robust Across Capability, Lower Control Effort</h3>
             <img src="static/images/k_sweep_cost.png" alt="Barrier violation rate versus adversary capability and QP cost comparison" class="result-figure">
             <p class="figure-caption mt-3">(a) Barrier-violation rate versus adversary capability $\kappa$: the AR-DPCBF variants remain in a low-violation cluster well separated from DPCBF, even as $\kappa$ approaches the validity edge $\kappa = c_{min}$. (b) Despite this added robustness, the AR-DPCBF variants require lower median QP cost than the reactive DPCBF baseline.</p>
@@ -288,8 +288,8 @@
 <!-- ABSTRACT -->
 <section class="section section-compact py-6" id="abstract">
     <div class="container is-max-desktop">
-        <h2 class="title is-3 has-text-centered mb-5">Abstract</h2>
-        <div class="content abstract-content p-5">
+        <h2 class="title is-3 has-text-centered mb-3">Abstract</h2>
+        <div class="content abstract-content p-4">
             <p class="has-text-justified" style="line-height: 1.7;">
                 <strong>Adversarial-Robust Dynamic Parabolic Control Barrier Functions (AR-DPCBF)</strong> extend Dynamic Parabolic Control Barrier Functions (DPCBFs) to dynamic environments with maneuvering obstacles. Unlike DPCBF, which assumes constant <span style="color: #ff0000; font-weight: bold;">obstacle velocity</span>, AR-DPCBF models obstacle maneuvers through a <span style="color: #ff0000; font-weight: bold;">bounded-adversary framework</span> and derives a geometry-preserving robust safety certificate with formal guarantees. The proposed approach introduces <span style="color: #ff0000; font-weight: bold;">Adversarial Control Barrier Functions (A-CBFs)</span>, closed-form parameter contractions, explicit feasibility conditions, and an <span style="color: #ff0000; font-weight: bold;">online obstacle capability estimator</span>. Two soft-constrained variants further improve feasibility in cluttered environments while retaining nominal DPCBF safety. Extensive simulations demonstrate <span style="color: #ff0000; font-weight: bold;">significant reductions in barrier violations and collisions</span> compared with DPCBF, with <span style="color: #ff0000; font-weight: bold;">Buffer Soft AR-DPCBF</span> providing the best overall trade-off between safety, feasibility, and robustness.
             </p>
@@ -300,7 +300,7 @@
 <!-- CITATION -->
 <section class="section section-compact py-6" id="citation">
     <div class="container is-max-desktop">
-        <h2 class="title is-3 has-text-centered mb-5">Citation</h2>
+        <h2 class="title is-3 has-text-centered mb-3">Citation</h2>
 <pre><code>@article{ARDPCBF2026,
   title   = {Adversarial-Robust Dynamic Parabolic Control Barrier Functions},
   author  = {Chandan Kumar Sah, Bazeela Banday and Jishnu Keshavan},
