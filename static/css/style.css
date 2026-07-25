@@ -1,319 +1,185 @@
 /* ==========================================================
-   AR-DPCBF Project Page
-   Clean stylesheet (v1)
+   AR-DPCBF Project Page - Optimized Stylesheet
    ========================================================== */
 
-/* ---------- Global ---------- */
-
-html{
-    scroll-behavior:smooth;
+html {
+    scroll-behavior: smooth;
 }
 
-body{
-    font-family:"Google Sans","Noto Sans",sans-serif;
-    color:#333;
-    background:#ffffff;
-    line-height:1.7;
+body {
+    font-family: "Google Sans", "Noto Sans", sans-serif;
+    color: #333;
+    background: #ffffff;
+    line-height: 1.6;
 }
 
-.section{
-    padding:4.5rem 1.5rem;
+/* Base section spacing control */
+.section-compact {
+    padding: 2.5rem 1.5rem !important;
 }
 
-.title{
-    color:#222;
-    font-weight:700;
+.title {
+    color: #111827;
+    font-weight: 700;
 }
 
-.title.is-3{
-    margin-bottom:1rem;
+.title.is-3 {
+    margin-bottom: 0.75rem;
 }
 
-.subtitle{
-    color:#555;
-    max-width:900px;
-    margin:0 auto 2rem auto;
-    line-height:1.6;
+.subtitle {
+    color: #4b5563;
+    max-width: 850px;
+    margin: 0 auto 1.5rem auto;
+    line-height: 1.5;
 }
 
-.highlight{
-    color:#d62728;
-    font-weight:600;
+/* Subtle inline highlights (Red accent) */
+.highlight {
+    color: #dc2626;
+    font-weight: 600;
 }
 
-.content{
-    color:#444;
+.content p {
+    margin-bottom: 1rem;
 }
 
-.content p{
-    margin-bottom:1.25rem;
+/* Hero */
+.hero {
+    background: #fff;
 }
 
-/* ---------- Hero ---------- */
-
-.hero{
-    background:#fff;
+.publication-title {
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
 }
 
-.publication-title{
-    line-height:1.15;
-    margin-bottom:1rem;
+.publication-authors {
+    color: #4b5563;
 }
 
-.publication-authors{
-    color:#555;
+.teaser-video {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
 }
 
-.buttons{
-    margin-top:0.5rem;
+.figure-caption {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
 }
 
-/* ---------- Hero video ---------- */
-
-.teaser-video{
-    width:100%;
-    border-radius:14px;
-    box-shadow:0 10px 28px rgba(0,0,0,.12);
+/* Callout Box for the Central Research Question */
+.question-callout {
+    background: #f0fdf4; /* Soft greenish light tint for insights, or #f8fafc */
+    background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin: 0.5rem auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
 
-.teaser-video + p{
-    margin-top:1rem;
+.uppercase-label {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #2563eb;
 }
 
-/* ---------- Shared figure styles ---------- */
-
-.figure-caption{
-    margin-top:1rem;
-    text-align:center;
-    font-size:.95rem;
-    color:#666;
-    line-height:1.6;
+.icon-accent {
+    color: #eab308;
 }
 
-img{
-    max-width:100%;
-    height:auto;
+.callout-question {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    font-style: italic;
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0 !important;
 }
 
-.box{
-    border-radius:14px;
-    box-shadow:0 8px 24px rgba(0,0,0,.08);
-    border:1px solid #eee;
+/* Interactive Card Styles */
+.interactive-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    width: 100%;
 }
 
-/* ---------- Navigation ---------- */
-
-#problem-setup img{
-    border-radius:10px;
+/* Header layout fix for title + subtitle */
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
-#problem-setup .column:last-child{
-    display:flex;
-    align-items:center;
+.card-title-group {
+    flex: 1;
 }
 
-/* ---------- Problem ---------- */
-
-#problem{
-    background:#fafafa;
+.interactive-frame {
+    width: 100%;
+    height: 680px;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    display: block;
 }
 
-.problem-video{
-    width:100%;
-    max-width:900px;
-    border-radius:14px;
-    box-shadow:0 10px 28px rgba(0,0,0,.14);
+/* Cards & Boxes */
+.box {
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    border: 1px solid #f3f4f6;
 }
 
-.problem-card{
-    max-width:900px;
-    margin:2rem auto 0;
-    padding:2rem 2.5rem;
-    background:#fff;
-    border-radius:14px;
-    box-shadow:0 8px 24px rgba(0,0,0,.08);
+.insight-box {
+    height: 100%;
+    padding: 1.25rem;
 }
 
-.main-equation{
-    text-align:center;
-    margin:1.8rem 0;
+.text-accent {
+    color: #2563eb;
 }
 
-.main-equation mjx-container{
-    font-size:135% !important;
+.result-gif {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-/* ---------- Key Insight ---------- */
-
-#insight{
-    background:#fff;
+pre {
+    border-radius: 8px;
+    padding: 1rem;
 }
 
-.insight-subtitle{
-    max-width:900px;
+.footer {
+    background: #fff;
+    border-top: 1px solid #f3f4f6;
+    padding: 2rem;
+    color: #9ca3af;
 }
 
-.insight-animation{
-    width:100%;
-    max-width:950px;
-    border-radius:14px;
-    box-shadow:0 12px 30px rgba(0,0,0,.12);
-}
-
-.insight-box{
-    height:100%;
-    border-radius:12px;
-    transition:.25s ease;
-}
-
-.insight-box:hover{
-    transform:translateY(-4px);
-    box-shadow:0 10px 24px rgba(0,0,0,.12);
-}
-
-.insight-box h4{
-    margin-bottom:.75rem;
-}
-
-/* ===================================================== */
-/* Interactive Visualization */
-/* ===================================================== */
-
-.interactive-card{
-    background:white;
-    border:1px solid #e6e6e6;
-    border-radius:16px;
-    padding:1.5rem;
-    box-shadow:0 8px 28px rgba(0,0,0,0.05);
-    margin-top:1rem;
-    width:100%;
-}
-
-.interactive-frame{
-    width:100%;
-    height:720px; /* Adjusted height to prevent excessive spacing while fitting the controls */
-    border:none;
-    border-radius:12px;
-    background:white;
-    display:block;
-}
-
-.interactive-frame:hover{
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-    transition:0.2s;
-}
-
-/* ===================================================== */
-/* Experimental Evaluation */
-/* ===================================================== */
-
-#results{
-    background:#fafafa;
-}
-
-.results-subtitle{
-    max-width:900px;
-    margin:0 auto 3rem auto;
-}
-
-.result-card{
-    margin-bottom:4rem;
-}
-
-.result-card .title{
-    text-align:center;
-    margin-bottom:1.25rem;
-}
-
-.result-gif{
-    width:100%;
-    border-radius:14px;
-    box-shadow:0 10px 28px rgba(0,0,0,0.12);
-}
-
-.result-card .figure-caption{
-    max-width:850px;
-    margin:1rem auto 0 auto;
-}
-
-/* ---------- Theory / Results ---------- */
-
-#theory,
-#results,
-#abstract,
-#citation{
-    background:#fafafa;
-}
-
-pre{
-    border-radius:10px;
-    padding:1.25rem;
-    overflow-x:auto;
-}
-
-/* ---------- Footer ---------- */
-
-.footer{
-    background:#fff;
-    border-top:1px solid #eee;
-    padding:2rem;
-    color:#666;
-}
-
-/* ===================================================== */
-/* Abstract */
-/* ===================================================== */
-
-#abstract{
-    background:#fafafa;
-}
-
-.abstract-content{
-    max-width:900px;
-    margin:0 auto;
-    font-size:1.08rem;
-    line-height:1.9;
-    color:#444;
-}
-
-.abstract-content p{
-    margin-bottom:1.35rem;
-}
-
-/* ---------- Responsive ---------- */
-
-@media screen and (max-width:768px){
-
-    .section{
-        padding:3rem 1.25rem;
+/* Responsive fixes */
+@media screen and (max-width: 768px) {
+    .section-compact {
+        padding: 1.75rem 1rem !important;
+    }
+    
+    .interactive-frame {
+        height: 820px;
     }
 
-    .publication-title{
-        font-size:2.2rem !important;
+    .card-header-flex {
+        flex-direction: column;
     }
-
-    .title.is-3{
-        font-size:2rem !important;
-    }
-
-    .problem-card{
-        padding:1.5rem;
-    }
-
-    .main-equation mjx-container{
-        font-size:115% !important;
-    }
-
-    .figure-caption{
-        text-align:left;
-    }
-
-    .buttons{
-        justify-content:center;
-    }
-
-    .interactive-frame{
-        height:850px; /* Gives extra space on smaller mobile viewports for stacked controls */
-    }
-
 }
