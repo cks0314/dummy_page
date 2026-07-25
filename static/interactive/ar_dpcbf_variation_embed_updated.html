@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AR-DPCBF — Adversarial Barrier Variation</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* Modern CSS Reset & Light Mode Design Tokens */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #F4F7F9;
+  --panel-bg: #FFFFFF;
+  --panel-border: #E2E8F0;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  
+  /* Accent Colors */
+  --k-accent: #EF4444;
+  --v-accent: #3B82F6;
+  --d-accent: #0D9488;
+  --a-accent: #8B5CF6;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.06) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.06) 0px, transparent 50%);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 32px 24px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header Styling */
+.hdr {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.hdr h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.hdr p {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 6px;
+}
+
+/* Elevated Light Card Wrapper */
+.card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.08);
+}
+
+/* Grid Layout for Canvas Plots */
+.plots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 24px;
+}
+
+.pw {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pt {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pt span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  background: #F8FAFC;
+}
+
+/* Legend Styling */
+.leg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 24px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.lsw { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid; }
+.lln { width: 22px; height: 3px; border-radius: 2px; }
+
+/* Status Bar & Controls Header Section */
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.controls-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  border: 1px solid var(--panel-border);
+}
+
+.status-title { font-size: 12px; font-weight: 700; color: var(--text-main); }
+.status-sub { font-size: 10px; font-weight: 500; color: var(--text-muted); }
+
+.status-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s ease;
+}
+
+/* Grid Layout for Interactive Control Sliders */
+.sls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.sb {
+  border-radius: 12px;
+  padding: 16px;
+  background: #F8FAFC;
+  border: 1px solid var(--panel-border);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sb:hover {
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+.sbt {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.sbl {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sbv {
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.sbu {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+/* Colored Accents */
+.sb.k .sbv { color: var(--k-accent); }
+.sb.v .sbv { color: var(--v-accent); }
+.sb.d .sbv { color: var(--d-accent); }
+.sb.a .sbv { color: var(--a-accent); }
+
+/* Range Inputs Styling */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.sb.k input { background: linear-gradient(to right, var(--k-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
+.sb.v input { background: linear-gradient(to right, var(--v-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
+.sb.d input { background: linear-gradient(to right, var(--d-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
+.sb.a input { background: linear-gradient(to right, var(--a-accent) var(--p, 40%), #E2E8F0 var(--p, 40%)); }
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+.sb.k input::-webkit-slider-thumb { background: var(--k-accent); }
+.sb.v input::-webkit-slider-thumb { background: var(--v-accent); }
+.sb.d input::-webkit-slider-thumb { background: var(--d-accent); }
+.sb.a input::-webkit-slider-thumb { background: var(--a-accent); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hdr">
+    <h1>AR-DPCBF Safety Certification</h1>
+    <p>Adversarial Robust Dynamic Parameterized Control Barrier Functions</p>
+  </div>
+
+  <div class="card">
+    <div class="plots">
+      <div class="pw">
+        <div class="pt">(A) Physical Space <span>Robot–Obstacle Geometry</span></div>
+        <canvas height="400" id="cp"></canvas>
+      </div>
+      <div class="pw">
+        <div class="pt">(B) Velocity Space <span>Barrier Validity Domain</span></div>
+        <canvas height="400" id="cv"></canvas>
+      </div>
+    </div>
+
+    <div class="leg">
+      <div class="li"><div class="lsw" style="background:rgba(245,158,11,0.15); border-color:#D97706;"></div>DPCBF Unsafe</div>
+      <div class="li"><div class="lsw" style="background:rgba(37,99,235,0.15); border-color:#2563EB;"></div>AR-DPCBF Unsafe</div>
+      <div class="li"><div class="lln" style="background:#D97706;"></div>DPCBF Boundary</div>
+      <div class="li"><div class="lln" style="background:#2563EB;"></div>AR-DPCBF Boundary</div>
+      <div class="li"><div style="width:10px;height:10px;background:#8B5E3C;border:1px solid #5C4033;"></div>Robot</div>
+      <div class="li"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444;border:1px solid #991B1B;"></div>Obstacle</div>
+      <div class="li"><div style="width:8px;height:8px;background:#A855F7;transform:rotate(45deg);"></div>Current v_rel</div>
+    </div>
+
+    <div class="controls-header">
+      <div class="controls-title">Interactive Simulation Controls</div>
+      <div class="status-card" id="statusCard">
+        <div>
+          <div class="status-title">Safety Certification</div>
+          <div class="status-sub">Evaluated dynamically</div>
+        </div>
+        <div class="status-pill" id="statusPill">🟢 SAFE • Margin +0.00</div>
+      </div>
+    </div>
+
+    <div class="sls">
+      <div class="sb k">
+        <div class="sbt">
+          <span class="sbl">Adv. Acceleration κ</span>
+          <div><span class="sbv" id="vk">1.42</span><span class="sbu">m/s²</span></div>
+        </div>
+        <input id="sk" max="3.5" min="0" step="0.02" type="range" value="1.42"/>
+      </div>
+
+      <div class="sb v">
+        <div class="sbt">
+          <span class="sbl">Relative Speed ‖v_rel‖</span>
+          <div><span class="sbv" id="vv">1.20</span><span class="sbu">m/s</span></div>
+        </div>
+        <input id="sv" max="3.5" min="0.3" step="0.02" type="range" value="1.20"/>
+      </div>
+
+      <div class="sb d">
+        <div class="sbt">
+          <span class="sbl">Separation Distance d</span>
+          <div><span class="sbv" id="vd">2.00</span><span class="sbu">m</span></div>
+        </div>
+        <input id="sd" max="5.0" min="0.3" step="0.02" type="range" value="2.00"/>
+      </div>
+
+      <div class="sb a">
+        <div class="sbt">
+          <span class="sbl">Relative Direction θ</span>
+          <div><span class="sbv" id="va">132</span><span class="sbu">°</span></div>
+        </div>
+        <input id="sa" max="180" min="-180" step="1" type="range" value="132"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// JavaScript Logic preserved and optimized for light mode canvas rendering
+const KL=0.144, KM=0.505, GAM=10, AMAX=1.0, RS=0.8, RR=0.3, RO=0.5;
+const DPR = Math.min(window.devicePixelRatio||1, 2);
+
+let theta=132;
+const PH={xmin:-1.5, xmax:7.0, ymin:-3.8, ymax:3.8};
+const VL={xmin:-5.5, xmax:2.2, ymin:-3.5, ymax:3.5};
+
+const elCP=document.getElementById('cp'), elCV=document.getElementById('cv');
+function setupC(c){
+  const w=c.parentElement.clientWidth; 
+  c.style.width=w+'px'; 
+  c.style.height='380px'; 
+  c.width=w*DPR; 
+  c.height=380*DPR;
+}
+setupC(elCP); setupC(elCV);
+
+function mkT(ax,W,H,PL,PR,PT,PB){
+  const pw=W-PL-PR, ph=H-PT-PB;
+  return{x:v=>PL+(v-ax.xmin)/(ax.xmax-ax.xmin)*pw,
+         y:v=>PT+(1-(v-ax.ymin)/(ax.ymax-ax.ymin))*ph, pw, ph};
+}
+
+function buildField(kappa, vrel, d_slider){
+  const obs_x = Math.sqrt(d_slider*d_slider + RS*RS);
+  const th=theta*Math.PI/180;
+  const VDX=Math.cos(th), VDY=Math.sin(th);
+  const vrx=VDX*vrel, vry=VDY*vrel;
+
+  const NX=220, NY=220;
+  const hDP = new Float32Array(NX*NY);
+  const hAR = new Float32Array(NX*NY);
+  const dxf=(PH.xmax-PH.xmin)/(NX-1), dyf=(PH.ymax-PH.ymin)/(NY-1);
+
+  for(let j=0;j<NY;j++){
+    const ry=PH.ymin+j*dyf;
+    for(let i=0;i<NX;i++){
+      const rx=PH.xmin+i*dxf;
+      const px=obs_x-rx, py=0-ry;
+      const dist2=px*px+py*py;
+
+      if(dist2 <= RS*RS){
+        hDP[j*NX+i] = -1;
+        hAR[j*NX+i] = -1;
+        continue;
+      }
+
+      const dg = Math.sqrt(dist2 - RS*RS);
+      const alp = Math.atan2(py, px);
+      const ca=Math.cos(alp), sa=Math.sin(alp);
+      const vtx = ca*vrx + sa*vry;
+      const vty = -sa*vrx + ca*vry;
+      const lam = KL*dg/vrel;
+      const mu  = KM*dg;
+      const h = vtx + lam*vty*vty + mu;
+      const dMu = kappa*dg/(GAM*vrel);
+      hDP[j*NX+i] = h;
+      hAR[j*NX+i] = h - dMu;
+    }
+  }
+  return {hDP, hAR, NX, NY, dxf, dyf, obs_x, vrx, vry};
+}
+
+function march(field, NX, NY){
+  const segs=[];
+  const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
+  for(let j=0;j<NY-1;j++)for(let i=0;i<NX-1;i++){
+    const v00=field[j*NX+i], v10=field[j*NX+i+1];
+    const v01=field[(j+1)*NX+i], v11=field[(j+1)*NX+i+1];
+    const pts=[];
+    const ip=(a,b,xa,ya,xb,yb)=>{
+      const t=a/(a-b);
+      pts.push([xa+t*(xb-xa), ya+t*(yb-ya)]);
+    };
+    if((v00>=0)!=(v10>=0)) ip(v00,v10, PH.xmin+i*dx,PH.ymin+j*dy, PH.xmin+(i+1)*dx,PH.ymin+j*dy);
+    if((v10>=0)!=(v11>=0)) ip(v10,v11, PH.xmin+(i+1)*dx,PH.ymin+j*dy, PH.xmin+(i+1)*dx,PH.ymin+(j+1)*dy);
+    if((v01>=0)!=(v11>=0)) ip(v01,v11, PH.xmin+i*dx,PH.ymin+(j+1)*dy, PH.xmin+(i+1)*dx,PH.ymin+(j+1)*dy);
+    if((v00>=0)!=(v01>=0)) ip(v00,v01, PH.xmin+i*dx,PH.ymin+j*dy, PH.xmin+i*dx,PH.ymin+(j+1)*dy);
+    if(pts.length>=2) segs.push(pts);
+  }
+  return segs;
+}
+
+function rasterFill(ctx, field, NX, NY, T, color){
+  ctx.fillStyle=color;
+  const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
+  const pw=Math.ceil(T.pw/(NX-1))+1, ph=Math.ceil(T.ph/(NY-1))+1;
+  for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){
+    if(field[j*NX+i]<0){
+      ctx.fillRect(
+        T.x(PH.xmin+i*dx - dx/2),
+        T.y(PH.ymin+j*dy + dy/2),
+        pw, ph
+      );
+    }
+  }
+}
+
+function drawSegs(ctx,segs,T){for(const p of segs){if(p.length<2)continue;ctx.moveTo(T.x(p[0][0]),T.y(p[0][1]));ctx.lineTo(T.x(p[1][0]),T.y(p[1][1]));}}
+
+function arw(ctx,x1,y1,x2,y2,col,lw){
+  const a=Math.atan2(y2-y1,x2-x1), hl=10*DPR;
+  ctx.save();
+  ctx.strokeStyle=col;ctx.fillStyle=col;
+  ctx.lineWidth=2*DPR;
+  ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hl*Math.cos(a-0.45),y2-hl*Math.sin(a-0.45));
+  ctx.lineTo(x2-hl*Math.cos(a+0.45),y2-hl*Math.sin(a+0.45));
+  ctx.closePath();ctx.fill();
+  ctx.font=`600 ${10*DPR}px 'JetBrains Mono'`;
+  ctx.fillStyle='#991B1B';
+  ctx.fillText('v_rel',(x1+x2)/2-4*DPR,(y1+y2)/2-8*DPR);
+  ctx.restore();
+}
+
+function gridAxes(ctx,T,ax,xv,yv,xl,yl,W,H,PL,PR,PT,PB){
+  ctx.save();
+  ctx.strokeStyle='rgba(15, 23, 42, 0.05)';ctx.lineWidth=.8*DPR;
+  for(const x of xv){ctx.beginPath();ctx.moveTo(T.x(x),PT);ctx.lineTo(T.x(x),H-PB);ctx.stroke();}
+  for(const y of yv){ctx.beginPath();ctx.moveTo(PL,T.y(y));ctx.lineTo(W-PR,T.y(y));ctx.stroke();}
+  ctx.strokeStyle='rgba(15, 23, 42, 0.15)';ctx.lineWidth=DPR;
+  ctx.beginPath();ctx.moveTo(PL,T.y(0));ctx.lineTo(W-PR,T.y(0));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(T.x(0),PT);ctx.lineTo(T.x(0),H-PB);ctx.stroke();
+  ctx.fillStyle='#64748B';ctx.font=`${9*DPR}px 'JetBrains Mono',monospace`;
+  ctx.textAlign='center';
+  for(const x of xv){if(x===0)continue;ctx.fillText(x,T.x(x),H-PB+14*DPR);}
+  ctx.textAlign='right';
+  for(const y of yv){if(y===0)continue;ctx.fillText(y,PL-6*DPR,T.y(y)+3*DPR);}
+  ctx.font=`500 ${11*DPR}px 'Plus Jakarta Sans',sans-serif`;ctx.fillStyle='#475569';
+  ctx.textAlign='center';
+  ctx.fillText(xl,PL+T.pw/2,H-PB+28*DPR);
+  ctx.save();ctx.translate(PL-28*DPR,PT+T.ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  ctx.restore();
+}
+
+function drawMarker(ctx,x,y,isRobot,fill,outer){
+  ctx.save();
+  const ri=5*DPR;
+  ctx.fillStyle=fill;
+  ctx.strokeStyle=outer;
+  ctx.lineWidth=2*DPR;
+  if(isRobot){
+    ctx.beginPath();
+    ctx.rect(x-ri,y-ri,2*ri,2*ri);
+    ctx.fill();
+    ctx.stroke();
+  }else{
+    ctx.beginPath();
+    ctx.arc(x,y,ri,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function render(kappa, vrel, d){
+  const F = buildField(kappa, vrel, d);
+  const PL=42*DPR, PR=14*DPR, PT=16*DPR, PB=36*DPR;
+  const Wp=elCP.width, Hp=elCP.height, Wv=elCV.width, Hv=elCV.height;
+  const Tp=mkT(PH,Wp,Hp,PL,PR,PT,PB);
+  const Tv=mkT(VL,Wv,Hv,PL,PR,PT,PB);
+  const ctxP=elCP.getContext('2d'), ctxV=elCV.getContext('2d');
+
+  ctxP.clearRect(0,0,Wp,Hp);
+  gridAxes(ctxP,Tp,PH,[-1,0,1,2,3,4,5,6],[-3,-2,-1,0,1,2,3],'x [m]','y [m]',Wp,Hp,PL,PR,PT,PB);
+
+  rasterFill(ctxP, F.hAR, F.NX, F.NY, Tp, 'rgba(37,99,235,0.08)');
+  rasterFill(ctxP, F.hDP, F.NX, F.NY, Tp, 'rgba(217,119,6,0.12)');
+
+  const dpS=march(F.hDP, F.NX, F.NY);
+  ctxP.save();ctxP.strokeStyle='#D97706';ctxP.lineWidth=2*DPR;ctxP.setLineDash([]);
+  ctxP.beginPath();drawSegs(ctxP,dpS,Tp);ctxP.stroke();ctxP.restore();
+
+  const arS=march(F.hAR, F.NX, F.NY);
+  ctxP.save();ctxP.strokeStyle='#2563EB';ctxP.lineWidth=2.5*DPR;ctxP.setLineDash([]);
+  ctxP.beginPath();drawSegs(ctxP,arS,Tp);ctxP.stroke();ctxP.restore();
+
+  const obs_x=F.obs_x;
+  const ox=Tp.x(obs_x), oy=Tp.y(0);
+  const halo=RO/(PH.xmax-PH.xmin)*Tp.pw*1.9;
+  ctxP.save();
+  ctxP.fillStyle='rgba(239,68,68,0.1)';
+  ctxP.beginPath();ctxP.arc(ox,oy,halo,0,Math.PI*2);ctxP.fill();
+  drawMarker(ctxP,ox,oy,false,'#EF4444','#991B1B');
+
+  const rx0=Tp.x(0), ry0=Tp.y(0);
+  drawMarker(ctxP,rx0,ry0,true,'#8B5E3C','#5C4033');
+
+  ctxP.save();ctxP.strokeStyle='#94A3B8';ctxP.lineWidth=DPR;ctxP.setLineDash([3*DPR,4*DPR]);
+  ctxP.beginPath();ctxP.moveTo(rx0,ry0);ctxP.lineTo(ox,oy);ctxP.stroke();ctxP.restore();
+
+  arw(ctxP, ox, oy, Tp.x(obs_x+F.vrx*0.55), Tp.y(0+F.vry*0.55), '#EF4444', 2*DPR);
+
+  const ay=Math.max(ry0,oy)+22*DPR;
+  ctxP.save();ctxP.strokeStyle='#0D9488';ctxP.lineWidth=1.5*DPR;
+  ctxP.beginPath();ctxP.moveTo(rx0,ay);ctxP.lineTo(ox,ay);ctxP.stroke();
+  ctxP.fillStyle='#0D9488';
+  [[rx0,1],[ox,-1]].forEach(([x,s])=>{ctxP.beginPath();ctxP.moveTo(x,ay);ctxP.lineTo(x+s*6*DPR,ay-4*DPR);ctxP.lineTo(x+s*6*DPR,ay+4*DPR);ctxP.closePath();ctxP.fill();});
+  ctxP.font=`600 ${11*DPR}px 'JetBrains Mono'`;ctxP.textAlign='center';
+  ctxP.fillText(`d = ${d.toFixed(2)} m`, (rx0+ox)/2, ay+14*DPR);
+  ctxP.restore();
+
+  ctxV.clearRect(0,0,Wv,Hv);
+  gridAxes(ctxV,Tv,VL,[-5,-4,-3,-2,-1,0,1,2],[-3,-2,-1,0,1,2,3],'ṽ_rel,x [m/s]','ṽ_rel,y [m/s]',Wv,Hv,PL,PR,PT,PB);
+
+  const lam = KL*d/vrel, mu = KM*d;
+  const dLam = kappa/(GAM*AMAX*vrel);
+  const dMu = kappa*d/(GAM*vrel);
+  const lam_s = lam - dLam;
+  const mu_s = mu - dMu;
+  const N=500, dpx=[], dpy=[], arx=[], ary=[];
+  for(let i=0;i<=N;i++){
+    const vy=VL.ymin+i/N*(VL.ymax-VL.ymin);
+    const vxd=-lam *vy*vy-mu, vxa=-lam_s*vy*vy-mu_s;
+    if(vxd>=VL.xmin&&vxd<=VL.xmax){dpx.push(vxd);dpy.push(vy);}
+    if(vxa>=VL.xmin&&vxa<=VL.xmax){arx.push(vxa);ary.push(vy);}
+  }
+
+  if(dpx.length>1){
+    ctxV.save();ctxV.fillStyle='rgba(217,119,6,0.08)';
+    ctxV.beginPath();ctxV.moveTo(Tv.x(dpx[0]),Tv.y(dpy[0]));
+    for(let i=1;i<dpx.length;i++)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
+    ctxV.lineTo(Tv.x(VL.xmin),Tv.y(dpy[dpy.length-1]));
+    ctxV.lineTo(Tv.x(VL.xmin),Tv.y(dpy[0]));
+    ctxV.closePath();ctxV.fill();ctxV.restore();
+  }
+
+  if(dpx.length>1&&arx.length>1){
+    ctxV.save();ctxV.fillStyle='rgba(37,99,235,0.08)';
+    ctxV.beginPath();ctxV.moveTo(Tv.x(arx[0]),Tv.y(ary[0]));
+    for(let i=1;i<arx.length;i++)ctxV.lineTo(Tv.x(arx[i]),Tv.y(ary[i]));
+    for(let i=dpx.length-1;i>=0;i--)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
+    ctxV.closePath();ctxV.fill();ctxV.restore();
+  }
+
+  if(dpx.length>1){
+    ctxV.save();ctxV.strokeStyle='#D97706';ctxV.lineWidth=2*DPR;
+    ctxV.beginPath();ctxV.moveTo(Tv.x(dpx[0]),Tv.y(dpy[0]));
+    for(let i=1;i<dpx.length;i++)ctxV.lineTo(Tv.x(dpx[i]),Tv.y(dpy[i]));
+    ctxV.stroke();ctxV.restore();
+  }
+
+  if(arx.length>1){
+    ctxV.save();ctxV.strokeStyle='#2563EB';ctxV.lineWidth=2.5*DPR;
+    ctxV.beginPath();ctxV.moveTo(Tv.x(arx[0]),Tv.y(ary[0]));
+    for(let i=1;i<arx.length;i++)ctxV.lineTo(Tv.x(arx[i]),Tv.y(ary[i]));
+    ctxV.stroke();ctxV.restore();
+  }
+
+  const vtx_c=F.vrx, vty_c=F.vry;
+  if(vtx_c>=VL.xmin&&vtx_c<=VL.xmax&&vty_c>=VL.ymin&&vty_c<=VL.ymax){
+    const px=Tv.x(vtx_c), py=Tv.y(vty_c);
+    ctxV.save();
+    ctxV.translate(px,py);
+    ctxV.rotate(Math.PI/4);
+    ctxV.fillStyle='#A855F7';
+    ctxV.strokeStyle='#FFFFFF';
+    ctxV.lineWidth=1.5*DPR;
+    ctxV.beginPath();ctxV.rect(-5*DPR,-5*DPR,10*DPR,10*DPR);
+    ctxV.fill();ctxV.stroke();
+    ctxV.restore();
+
+    const hs_now=vtx_c+lam_s*vty_c*vty_c+mu_s;
+    const safe=hs_now>=0;
+    const pill=document.getElementById('statusPill');
+    if(pill){
+      if(safe){
+        pill.textContent=`🟢 SAFE • Margin +${hs_now.toFixed(2)}`;
+        pill.style.background='#ECFDF5';
+        pill.style.color='#047857';
+        pill.style.border='1px solid #A7F3D0';
+      }else{
+        pill.textContent=`🔴 UNSAFE • Margin ${hs_now.toFixed(2)}`;
+        pill.style.background='#FEF2F2';
+        pill.style.color='#B91C1C';
+        pill.style.border='1px solid #FECACA';
+      }
+    }
+  }
+}
+
+function pct(el){return((+el.value-+el.min)/(+el.max-+el.min)*100).toFixed(1)+'%';}
+let raf=null;
+function onInput(){
+  const k=+document.getElementById('sk').value;
+  const v=+document.getElementById('sv').value;
+  const d=+document.getElementById('sd').value;
+  theta=+document.getElementById('sa').value;
+  document.getElementById('vk').textContent=k.toFixed(2);
+  document.getElementById('vv').textContent=v.toFixed(2);
+  document.getElementById('vd').textContent=d.toFixed(2);
+  document.getElementById('va').textContent=Math.round(theta);
+  ['sk','sv','sd','sa'].forEach(id=>{const el=document.getElementById(id);el.style.setProperty('--p',pct(el));});
+  if(raf)cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>render(k,v,d));
+}
+['sk','sv','sd','sa'].forEach(id=>document.getElementById(id).addEventListener('input',onInput));
+window.addEventListener('resize',()=>{setupC(elCP);setupC(elCV);onInput();});
+['sk','sv','sd','sa'].forEach(id=>{const el=document.getElementById(id);el.style.setProperty('--p',pct(el));});
+onInput();
+</script>
+</body>
+</html>
