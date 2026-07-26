@@ -229,8 +229,8 @@
                 The parameter $\kappa$ upper-bounds the obstacle's maneuvering authority and determines the amount by which the nominal DPCBF certificate must be contracted. AR-DPCBF preserves the original parabolic barrier and contracts its parameters according to the <span class="hl-blue">worst-case maneuver</span> permitted by $\kappa$:
             </p>
             <p class="has-text-centered" style="line-height: 2.2;">
-                $$\text{DPCBF} \quad \color{red}{h \;=\; \tilde v_{rel,x} + \lambda\, \tilde v_{rel,y}^2 + \mu}, \qquad \lambda = k_\lambda\dfrac{d}{\|v_{rel}\|}, \qquad \mu = k_\mu d$$
-                $$\text{AR-DPCBF} \quad \color{red}{h^* \;=\; \tilde v_{rel,x} + \lambda^*\, \tilde v_{rel,y}^2 + \mu^*}, \qquad \lambda^* = \lambda - \dfrac{\kappa}{\gamma a_{\max}\|v_{rel}\|}, \qquad \mu^* = \mu - \dfrac{\kappa d}{\gamma \|v_{rel}\|}$$
+                $$\text{DPCBF} \quad \color{red}{h \;=\; \tilde v_{rel,x} + \lambda\, \tilde v_{rel,y}^2 + \mu}, \qquad \color{black} \lambda = k_\lambda\dfrac{d}{\|v_{rel}\|}, \qquad \mu = k_\mu d$$
+                $$\text{AR-DPCBF} \quad \color{red}{h^* \;=\; \tilde v_{rel,x} + \lambda^*\, \tilde v_{rel,y}^2 + \mu^*}, \qquad \color{black} \lambda^* = \lambda - \dfrac{\kappa}{\gamma a_{\max}\|v_{rel}\|}, \qquad \mu^* = \mu - \dfrac{\kappa d}{\gamma \|v_{rel}\|}$$
             </p>
             <p style="line-height: 1.7;">
                 As the admissible obstacle capability $\kappa$ increases, the AR-DPCBF parabola widens, enlarging the adversarial unsafe set $\{h^*<0\}$ and correspondingly shrinking the certified safe set $\{h^* \ge 0\}$. Consequently, <span class="hl-blue">the AR-DPCBF safe set forms a conservative inner approximation of the nominal DPCBF safe set</span>, reserving sufficient safety margin to guarantee validity against all admissible obstacle maneuvers. When $\kappa=0$, the contraction vanishes, the adversarial and nominal safe sets coincide, and AR-DPCBF exactly recovers the original DPCBF.
