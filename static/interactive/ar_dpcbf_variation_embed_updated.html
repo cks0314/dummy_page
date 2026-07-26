@@ -83,7 +83,7 @@ input[type=range]:active{cursor:grabbing;}
 <div class="li"><div class="lsw" style="background:rgba(20,184,166,0.15);border-color:#14B8A6;"></div>AR-DPCBF unsafe</div>
 <div class="li"><div class="lln" style="background:#F4725C;"></div>DPCBF boundary</div>
 <div class="li"><div class="lln" style="background:#14B8A6;"></div>AR-DPCBF boundary</div>
-<div class="li"><div style="width:12px;height:12px;background:#C86400;border:2px solid #fff;outline:1.5px solid #964B00;"></div>Robot</div>
+<div class="li"><div style="width:12px;height:12px;background:#2558A8;border:2px solid #fff;outline:1.5px solid #163768;"></div>Robot</div>
 <div class="li"><div style="width:12px;height:12px;border-radius:50%;background:#EF4444;border:2px solid #fff;outline:1.5px solid #991B1B;"></div>Obstacle</div>
 <div class="li"><div style="width:10px;height:10px;background:#7C3AED;border:2px solid #fff;outline:1.5px solid #5B21B6;transform:rotate(45deg);"></div>Current v_rel</div>
 </div>
@@ -123,8 +123,12 @@ setupC(elCP); setupC(elCV);
 
 function mkT(ax,W,H,PL,PR,PT,PB){
   const pw=W-PL-PR, ph=H-PT-PB;
-  return{x:v=>PL+(v-ax.xmin)/(ax.xmax-ax.xmin)*pw,
-         y:v=>PT+(1-(v-ax.ymin)/(ax.ymax-ax.ymin))*ph, pw, ph};
+  const spanX=ax.xmax-ax.xmin, spanY=ax.ymax-ax.ymin;
+  const scale=Math.min(pw/spanX, ph/spanY);
+  const drawW=spanX*scale, drawH=spanY*scale;
+  const offX=PL+(pw-drawW)/2, offY=PT+(ph-drawH)/2;
+  return{x:v=>offX+(v-ax.xmin)*scale,
+         y:v=>offY+(ax.ymax-v)*scale, pw, ph, scale};
 }
 
 // ── Barrier field computation ──────────────────────────────────────────
@@ -194,7 +198,7 @@ function march(field, NX, NY){
 function rasterFill(ctx, field, NX, NY, T, color){
   ctx.fillStyle=color;
   const dx=(PH.xmax-PH.xmin)/(NX-1), dy=(PH.ymax-PH.ymin)/(NY-1);
-  const pw=Math.ceil(T.pw/(NX-1))+1, ph=Math.ceil(T.ph/(NY-1))+1;
+  const pw=Math.ceil(dx*T.scale)+1, ph=Math.ceil(dy*T.scale)+1;
   for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){
     if(field[j*NX+i]<0){
       ctx.fillRect(
@@ -311,7 +315,7 @@ function render(kappa, vrel, d){
   drawMarker(ctxP,ox,oy,false,'#EF4444','#991B1B');
 
   const rx0=Tp.x(0), ry0=Tp.y(0);
-  drawMarker(ctxP,rx0,ry0,true,'#C86400','#964B00');
+  drawMarker(ctxP,rx0,ry0,true,'#2558A8','#163768');
 
   ctxP.save();ctxP.strokeStyle='#BFC7D8';ctxP.lineWidth=DPR;ctxP.setLineDash([3*DPR,4*DPR]);
   ctxP.beginPath();ctxP.moveTo(rx0,ry0);ctxP.lineTo(ox,oy);ctxP.stroke();ctxP.restore();
@@ -419,8 +423,18 @@ function render(kappa, vrel, d){
   }
 
   ctxV.save();ctxV.font=`500 ${11*DPR}px 'Inter', sans-serif`;ctxV.textAlign='center';
-  ctxV.fillStyle='rgba(80,80,80,0.55)';ctxV.fillText('safe',Tv.x(0.5),Tv.y(2.8));
-  ctxV.fillStyle='rgba(200,60,10,0.55)';ctxV.fillText('unsafe',Tv.x(-4.0),Tv.y(2.8));
+  const yLabel=2.0;
+  const vxd_atY=-lam*yLabel*yLabel-mu, vxa_atY=-lam_s*yLabel*yLabel-mu_s;
+  const safeMin=vxa_atY, safeMax=VL.xmax;
+  const unsafeMin=VL.xmin, unsafeMax=vxd_atY;
+  if(safeMax-safeMin>0.8){
+    const safeX=Math.min(safeMax-0.3,Math.max(safeMin+0.5,(safeMin+safeMax)/2));
+    ctxV.fillStyle='rgba(80,80,80,0.55)';ctxV.fillText('safe',Tv.x(safeX),Tv.y(yLabel));
+  }
+  if(unsafeMax-unsafeMin>0.8){
+    const unsafeX=Math.max(unsafeMin+0.3,Math.min(unsafeMax-0.5,(unsafeMin+unsafeMax)/2));
+    ctxV.fillStyle='rgba(200,60,10,0.55)';ctxV.fillText('unsafe',Tv.x(unsafeX),Tv.y(yLabel));
+  }
   ctxV.restore();
 }
 

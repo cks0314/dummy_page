@@ -125,14 +125,14 @@
     padding: 12px 18px;
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: 1fr 1fr 0.9fr 1fr;
-    gap: 0 26px;
-    align-items: start;
+    grid-template-columns: 0.85fr 0.85fr 0.85fr 1.3fr;
+    gap: 0 24px;
+    align-items: center;
   }
   .console > div { padding-top: 2px; }
   .console > div:not(:first-child) {
     border-left: 1px solid var(--border);
-    padding-left: 26px;
+    padding-left: 24px;
   }
   @media (max-width: 980px) {
     .console { grid-template-columns: 1fr 1fr; row-gap: 18px; }
@@ -143,18 +143,52 @@
     .console > div:not(:first-child) { border-left: none; padding-left: 0; }
   }
 
-  .field-label {
+  .slider-field {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 2px;
+    align-items: center;
+    gap: 6px;
   }
-  .field-label label { font-weight: 600; font-size: 12.5px; color: var(--ink); }
-  .field-label .unit { font-family: var(--mono); font-size: 11px; color: var(--faint); }
-  .field-label .val { font-family: var(--mono); font-weight: 600; font-size: 13.5px; }
+  .slider-label {
+    font-weight: 800;
+    font-size: 18px;
+    color: #00acc1;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .slider-label sub { font-size: 0.55em; }
+  .val {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--ink);
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 30px;
+    text-align: right;
+  }
+  .scale-end {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .end-a.lo { color: var(--blue); }
+  .end-a.hi { color: var(--orange); }
+  .end-w.lo { color: var(--red); }
+  .end-w.hi { color: var(--green); }
+  .end-v.lo { color: var(--blue); }
+  .end-v.hi { color: var(--orange); }
+  .unit-tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--faint);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 
   /* ---- custom slider ---- */
-  .slider-track-wrap { position: relative; padding: 14px 0 2px; }
+  .slider-track-wrap { position: relative; flex: 1 1 auto; min-width: 44px; padding: 14px 0 11px; }
 
   input[type="range"] {
     width: 100%;
@@ -214,6 +248,17 @@
     pointer-events: none;
     z-index: 1;
   }
+  .zero-label {
+    position: absolute;
+    top: 20px;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: 700;
+    color: var(--faint);
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 1;
+  }
 
   .value-bubble {
     position: absolute;
@@ -243,17 +288,8 @@
   }
   .value-bubble.show { opacity: 1; transform: translate(-50%, -100%) scale(1); }
 
-  .scale {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 9.5px;
-    color: var(--faint);
-    margin-top: 2px;
-  }
-
   .playback { display: flex; flex-direction: column; gap: 7px; }
-  .row2 { display: flex; gap: 7px; }
+  .row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 7px; }
   button.ctl {
     font-family: var(--mono);
     font-size: 11.5px;
@@ -264,6 +300,7 @@
     border-radius: 6px;
     padding: 7px 12px;
     cursor: pointer;
+    flex-shrink: 0;
     transition: background 0.12s ease, transform 0.06s ease;
   }
   button.ctl:hover { background: #e0e7ff; }
@@ -280,33 +317,71 @@
   }
   #timeScrub { margin: 8px 0 2px; }
 
+  .time-bar {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 10px 18px 8px;
+    margin-top: 12px;
+  }
+
   .status-badge {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     padding: 5px 9px;
     border-radius: 5px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    width: fit-content;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .status-badge #statusText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
   .status-badge.ok { background: var(--green-wash); color: #1c6b3f; }
   .status-badge.fail { background: var(--red-wash); color: #8a2418; }
-  .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-  .delta-block { display: flex; flex-direction: column; gap: 1px; }
-  .delta-num {
+  .delta-inline {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .panel-head .delta-label {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--red);
+    white-space: nowrap;
+  }
+  .panel-head .delta-num {
     font-family: var(--mono);
-    font-size: 23px;
-    font-weight: 600;
-    line-height: 1.2;
-    margin-top: 2px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
     transition: color 0.15s ease;
   }
-  .delta-num.neg { color: var(--red); }
-  .delta-num.pos { color: var(--green); }
-  .delta-caption { font-family: var(--sans); font-size: 11px; color: var(--sub); line-height: 1.35; }
+  .panel-head .delta-num.neg { color: var(--red); }
+  .panel-head .delta-num.pos { color: var(--green); }
+  .panel-head .delta-unit { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+  .panel-head .delta-caption {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    color: var(--sub);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 0 1 auto;
+  }
 
   /* ---------------- panels / canvases ---------------- */
 
@@ -321,15 +396,17 @@
     overflow: hidden;
   }
   .panel-head {
-    padding: 10px 14px 8px;
+    padding: 11px 14px 9px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    gap: 10px;
   }
-  .panel-head h3 { font-family: var(--serif); font-size: 13.5px; font-weight: 700; margin: 0; }
+  .panel-head h3 { font-family: var(--serif); font-size: 13.5px; font-weight: 700; margin: 0; flex-shrink: 0; }
   .panel-head span { font-family: var(--mono); font-size: 10px; color: var(--faint); }
-  .canvas-wrap { position: relative; width: 100%; aspect-ratio: 16 / 11.5; background: #fff; }
+  .canvas-wrap { position: relative; width: 100%; aspect-ratio: 16 / 8.5; background: #fff; }
+  .canvas-wrap.chart-short { aspect-ratio: 16 / 7.5; }
   canvas { display: block; width: 100%; height: 100%; }
 
   .legend { padding: 7px 14px 11px; display: flex; flex-wrap: wrap; gap: 10px; }
@@ -364,53 +441,67 @@
   </p>
 
   <div class="console">
-    <div>
-      <div class="field-label">
-        <label for="sliderA">Acceleration <span class="unit">a<sub>obs</sub></span></label>
-        <span class="val" id="valA">0.35</span>
-      </div>
+    <div class="slider-field">
+      <label for="sliderA" class="slider-label">a<sub>obs</sub></label>
+      <span class="scale-end lo end-a" id="scaleLoA">&minus;0.5</span>
       <div class="slider-track-wrap" id="wrapA">
         <span class="zero-tick" id="tickA"></span>
+        <span class="zero-label" id="zeroLabelA">0</span>
         <span class="value-bubble" id="bubbleA">0.35</span>
         <input type="range" id="sliderA" min="-0.5" max="0.5" step="0.01" value="0.35" />
       </div>
-      <div class="scale"><span>&minus;0.5</span><span>0</span><span>+0.5 m/s&sup2;</span></div>
+      <span class="scale-end hi end-a" id="scaleHiA">+0.5</span>
+      <span class="val" id="valA">0.35</span>
+      <span class="unit-tag">m/s&sup2;</span>
     </div>
 
-    <div>
-      <div class="field-label">
-        <label for="sliderW">Turning rate <span class="unit">&omega;<sub>obs</sub></span></label>
-        <span class="val" id="valW">&minus;0.50</span>
-      </div>
+    <div class="slider-field">
+      <label for="sliderW" class="slider-label">&omega;<sub>obs</sub></label>
+      <span class="scale-end lo end-w" id="scaleLoW">&minus;0.6</span>
       <div class="slider-track-wrap" id="wrapW">
         <span class="zero-tick" id="tickW"></span>
+        <span class="zero-label" id="zeroLabelW">0</span>
         <span class="value-bubble" id="bubbleW">&minus;0.50</span>
-        <input type="range" id="sliderW" min="-0.6" max="0.6" step="0.01" value="-0.5" />
+        <input type="range" id="sliderW" min="-0.6" max="0.6" step="0.01" value="-0.05" />
       </div>
-      <div class="scale"><span>&minus;0.6</span><span>0</span><span>+0.6 rad/s</span></div>
+      <span class="scale-end hi end-w" id="scaleHiW">+0.6</span>
+      <span class="val" id="valW">&minus;0.05</span>
+      <span class="unit-tag">rad/s</span>
+    </div>
+
+    <div class="slider-field">
+      <label for="sliderV" class="slider-label">v<sub>obs</sub></label>
+      <span class="scale-end lo end-v" id="scaleLoV">0.4</span>
+      <div class="slider-track-wrap" id="wrapV">
+        <span class="value-bubble" id="bubbleV">1.00</span>
+        <input type="range" id="sliderV" min="0.4" max="2.0" step="0.05" value="1.0" />
+      </div>
+      <span class="scale-end hi end-v" id="scaleHiV">2.0</span>
+      <span class="val" id="valV">1.00</span>
+      <span class="unit-tag">m/s</span>
     </div>
 
     <div class="playback">
-      <div id="statusBadge" class="status-badge ok"><span class="dot"></span><span id="statusText">certificate holds</span></div>
       <div class="row2">
         <button class="ctl primary" id="btnPlay">&#10074;&#10074;&nbsp; Pause</button>
         <button class="ctl" id="btnDpcbf">DPCBF</button>
+        <div id="statusBadge" class="status-badge ok"><span id="statusText">certificate holds</span></div>
       </div>
-      <input type="range" id="timeScrub" min="0" max="1000" step="1" value="0" />
-      <div class="timeLabel"><span>t = <span id="timeNow">0.00</span> s</span><span>0&ndash;14 s</span></div>
-    </div>
-
-    <div class="delta-block">
-      <div class="field-label"><label>Fundamental gap &Delta;(t)</label></div>
-      <div class="delta-num" id="deltaNum">&minus;0.48</div>
-      <div class="delta-caption" id="deltaCaption">true barrier falling faster than DPCBF assumes</div>
     </div>
   </div>
 
   <div class="panels">
     <div class="panel">
-      <div class="panel-head"><h3>Barrier value over time</h3><span>h(x(t))</span></div>
-      <div class="canvas-wrap"><canvas id="chartCanvas"></canvas></div>
+      <div class="panel-head">
+        <h3>Barrier value over time</h3>
+        <div class="delta-inline">
+          <span class="delta-label">Gap &Delta;(t)</span>
+          <span class="delta-num" id="deltaNum">&minus;0.48</span>
+          <span class="delta-unit">m/s&sup2;</span>
+          <span class="delta-caption" id="deltaCaption">falls faster than assumed</span>
+        </div>
+      </div>
+      <div class="canvas-wrap chart-short"><canvas id="chartCanvas"></canvas></div>
       <div class="legend">
         <div class="item"><span class="swatch" style="background:var(--ghost)"></span>DPCBF assumes</div>
         <div class="item"><span class="swatch" style="background:var(--green)"></span>true, safe</div>
@@ -430,6 +521,11 @@
     </div>
   </div>
 
+  <div class="time-bar">
+    <input type="range" id="timeScrub" min="0" max="1000" step="1" value="0" />
+    <div class="timeLabel"><span>t = <span id="timeNow">0.00</span> s</span><span>0&ndash;18 s</span></div>
+  </div>
+
 </div>
 
 <script>
@@ -445,10 +541,10 @@ const SCENARIO = {
   pRob0: { x: 0, y: 0 },
   vRob: 1.6,
   thRob: 0.0,
-  pObs0: { x: 12, y: 4 },
+  pObs0: { x: 8, y: 5 },
   vObs0: 1.0,
-  thObs0: (-70 * Math.PI) / 180,
-  T: 14.0,
+  thObs0: -Math.PI / 2,
+  T: 18.0,
   dt: 0.01,
 };
 const ROB_GOAL = {
@@ -489,19 +585,73 @@ function simulateObstacle(aObs, wObs) {
   return { pos, vel, th, v };
 }
 
-function simulateRobot() {
+function simulateRobot(obsAssumed) {
   const { pRob0, vRob, thRob, T, dt } = SCENARIO;
   const n = Math.round(T / dt);
   const pos = new Array(n);
-  const velVec = { x: vRob * Math.cos(thRob), y: vRob * Math.sin(thRob) };
+  const vel = new Array(n);
+
+  // Closed-loop avoidance gains. The controller only ever sees the ASSUMED
+  // (constant-velocity) obstacle model — exactly what a real DPCBF-QP does —
+  // so it steers to keep h >= 0 against obsAssumed, never against the true one.
+  // A separate, always-on goal-seeking term steers toward ROB_GOAL so the
+  // robot actually completes the trip rather than merely resuming its old
+  // heading once the avoidance urgency fades.
+  const MAX_TURN_RATE = 1.1;   // rad/s cap on heading rate
+  const K_AVOID = 3.4;         // avoidance gain (gradient ascent on h w.r.t. heading)
+  const K_GOAL = 4.0;          // steering gain toward the goal bearing
+  const H_ACTIVE = 3.0;        // urgency fades out once h exceeds this margin
+  const EPS = 0.01;            // finite-difference step for dh/dtheta
+
+  let x = pRob0.x, y = pRob0.y, th = thRob;
+
   for (let i = 0; i < n; i++) {
-    const t = i * dt;
-    pos[i] = { x: pRob0.x + velVec.x * t, y: pRob0.y + velVec.y * t };
+    pos[i] = { x, y };
+    vel[i] = { x: vRob * Math.cos(th), y: vRob * Math.sin(th) };
+
+    const oPos = obsAssumed.pos[i], oVel = obsAssumed.vel[i];
+    const hAt = (thTest) => {
+      const vTest = { x: vRob * Math.cos(thTest), y: vRob * Math.sin(thTest) };
+      return barrierAt(oPos, oVel, { x, y }, vTest).h;
+    };
+    const h0 = hAt(th);
+    const grad = (hAt(th + EPS) - h0) / EPS;
+
+    const urgency = Math.max(0, 1 - Math.max(h0, 0) / H_ACTIVE);
+    const bearingGoal = Math.atan2(ROB_GOAL.y - y, ROB_GOAL.x - x);
+    const diff = Math.atan2(Math.sin(bearingGoal - th), Math.cos(bearingGoal - th));
+    let thDot = K_AVOID * urgency * grad + K_GOAL * diff;
+    thDot = Math.max(-MAX_TURN_RATE, Math.min(MAX_TURN_RATE, thDot));
+
+    th += thDot * dt;
+    x += vRob * Math.cos(th) * dt;
+    y += vRob * Math.sin(th) * dt;
   }
-  return { pos, velVec };
+  return { pos, vel };
 }
 
-function computeBarrier(posObs, velObs, posRob, velRobVec) {
+function barrierAt(posObsI, velObsI, posRobI, velRobI) {
+  const relX = posObsI.x - posRobI.x;
+  const relY = posObsI.y - posRobI.y;
+  const dd = Math.hypot(relX, relY);
+  const dClear = Math.sqrt(Math.max(dd * dd - R_SAFE * R_SAFE, 1e-6));
+
+  const a = Math.atan2(relY, relX);
+  const ca = Math.cos(a), sa = Math.sin(a);
+
+  const vrelX = velObsI.x - velRobI.x;
+  const vrelY = velObsI.y - velRobI.y;
+  const vtx = ca * vrelX + sa * vrelY;
+  const vty = -sa * vrelX + ca * vrelY;
+
+  const vnorm = Math.max(Math.hypot(vrelX, vrelY), 0.08);
+  const lam = (K_LAMBDA * dClear) / vnorm;
+  const mu = K_MU * dClear;
+
+  return { h: vtx + lam * vty * vty + mu, dist: dd, lam, alpha: a, vtx, vty };
+}
+
+function computeBarrier(posObs, velObs, posRob, velRobArr) {
   const n = posObs.length;
   const h = new Float64Array(n);
   const dist = new Float64Array(n);
@@ -511,30 +661,13 @@ function computeBarrier(posObs, velObs, posRob, velRobVec) {
   const vty = new Float64Array(n);
 
   for (let i = 0; i < n; i++) {
-    const vR = velRobVec;
-    const relX = posObs[i].x - posRob[i].x;
-    const relY = posObs[i].y - posRob[i].y;
-    const dd = Math.hypot(relX, relY);
-    dist[i] = dd;
-    const dClear = Math.sqrt(Math.max(dd * dd - R_SAFE * R_SAFE, 1e-6));
-
-    const a = Math.atan2(relY, relX);
-    alpha[i] = a;
-    const ca = Math.cos(a), sa = Math.sin(a);
-
-    const vrelX = velObs[i].x - vR.x;
-    const vrelY = velObs[i].y - vR.y;
-    const vtxi = ca * vrelX + sa * vrelY;
-    const vtyi = -sa * vrelX + ca * vrelY;
-    vtx[i] = vtxi;
-    vty[i] = vtyi;
-
-    const vnorm = Math.max(Math.hypot(vrelX, vrelY), 0.08);
-    const lami = (K_LAMBDA * dClear) / vnorm;
-    lam[i] = lami;
-    const mui = K_MU * dClear;
-
-    h[i] = vtxi + lami * vtyi * vtyi + mui;
+    const b = barrierAt(posObs[i], velObs[i], posRob[i], velRobArr[i]);
+    h[i] = b.h;
+    dist[i] = b.dist;
+    lam[i] = b.lam;
+    alpha[i] = b.alpha;
+    vtx[i] = b.vtx;
+    vty[i] = b.vty;
   }
   return { h, dist, lam, alpha, vtx, vty };
 }
@@ -553,12 +686,12 @@ function computeDelta(aObs, wObs, thObsArr, vObsArr, barrierB, freezeIdx) {
 
 function simulateAll(aObs, wObs) {
   const t = makeTimeArray(SCENARIO.T, SCENARIO.dt);
-  const rob = simulateRobot();
   const obsA = simulateObstacle(0.0, 0.0); // DPCBF's assumed world: no maneuver
   const obsBRaw = simulateObstacle(aObs, wObs); // true world
+  const rob = simulateRobot(obsA); // steers using ONLY the assumed (constant-velocity) obstacle
 
-  const barA = computeBarrier(obsA.pos, obsA.vel, rob.pos, rob.velVec);
-  const barB = computeBarrier(obsBRaw.pos, obsBRaw.vel, rob.pos, rob.velVec);
+  const barA = computeBarrier(obsA.pos, obsA.vel, rob.pos, rob.vel);
+  const barB = computeBarrier(obsBRaw.pos, obsBRaw.vel, rob.pos, rob.vel);
 
   // first physical collision (real robot vs real obstacle)
   let cIdx = null;
@@ -590,7 +723,7 @@ function simulateAll(aObs, wObs) {
 
   return {
     t,
-    rob: { pos: robPosVisual, velVec: rob.velVec },
+    rob: { pos: robPosVisual, vel: rob.vel },
     obsA,
     obsB: { pos: obsBPosVisual, vel: obsBRaw.vel },
     barA, barB, delta, cIdx,
@@ -600,7 +733,7 @@ function simulateAll(aObs, wObs) {
 /* =====================================================================
    2. State
    ===================================================================== */
-let aObs = 0.35, wObs = -0.5;
+let aObs = 0.35, wObs = -0.05;
 let sim = simulateAll(aObs, wObs);
 let idx = 0;
 let playing = true; // Default to autoplay on load
@@ -612,12 +745,17 @@ const PLAYBACK_SPEED = 1.6; // sim-seconds per wall-second
    ===================================================================== */
 const sliderA = document.getElementById("sliderA");
 const sliderW = document.getElementById("sliderW");
+const sliderV = document.getElementById("sliderV");
 const valA = document.getElementById("valA");
 const valW = document.getElementById("valW");
+const valV = document.getElementById("valV");
 const tickA = document.getElementById("tickA");
 const tickW = document.getElementById("tickW");
+const zeroLabelA = document.getElementById("zeroLabelA");
+const zeroLabelW = document.getElementById("zeroLabelW");
 const bubbleA = document.getElementById("bubbleA");
 const bubbleW = document.getElementById("bubbleW");
+const bubbleV = document.getElementById("bubbleV");
 const btnPlay = document.getElementById("btnPlay");
 const btnDpcbf = document.getElementById("btnDpcbf");
 const timeScrub = document.getElementById("timeScrub");
@@ -687,7 +825,7 @@ function drawChart() {
   const ctx = chartCtx;
   ctx.clearRect(0, 0, width, height);
 
-  const padL = 40, padR = 16, padT = 16, padB = 32;
+  const padL = 54, padR = 16, padT = 16, padB = 32;
   const plotW = width - padL - padR;
   const plotH = height - padT - padB;
 
@@ -722,7 +860,7 @@ function drawChart() {
     const py = yOf(yt);
     ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
     ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    ctx.fillText(yt.toFixed(1), padL - 7, py);
+    ctx.fillText(yt.toFixed(1), padL - 10, py);
   });
   for (let tt = 0; tt <= T + 1e-9; tt += 2) {
     const px = xOf(tt);
@@ -739,7 +877,7 @@ function drawChart() {
   ctx.textBaseline = "top";
   ctx.fillText("Time t (s)", padL + plotW / 2, padT + plotH + 18);
 
-  ctx.translate(padL - 26, padT + plotH / 2);
+  ctx.translate(padL - 46, padT + plotH / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText("Barrier Value h(x(t))", 0, 0);
   ctx.restore();
@@ -815,9 +953,19 @@ function computeSceneBounds() {
     if (p.y < ymin) ymin = p.y; if (p.y > ymax) ymax = p.y;
   };
   sim.rob.pos.forEach(consider);
-  sim.obsA.pos.forEach(consider);
-  sim.obsB.pos.forEach(consider);
   consider(ROB_GOAL);
+  // Only count obstacle positions while they're within a reasonable interaction
+  // distance of the robot — its unconstrained motion long after any encounter
+  // shouldn't dictate how zoomed-out the view is.
+  const INTERACTION_RADIUS = 12;
+  const n = sim.rob.pos.length;
+  for (let i = 0; i < n; i++) {
+    const rp = sim.rob.pos[i];
+    const dA = Math.hypot(sim.obsA.pos[i].x - rp.x, sim.obsA.pos[i].y - rp.y);
+    if (dA < INTERACTION_RADIUS) consider(sim.obsA.pos[i]);
+    const dB = Math.hypot(sim.obsB.pos[i].x - rp.x, sim.obsB.pos[i].y - rp.y);
+    if (dB < INTERACTION_RADIUS) consider(sim.obsB.pos[i]);
+  }
   const mx = (xmax - xmin) * 0.14 + R_SAFE + 0.6;
   const my = (ymax - ymin) * 0.14 + R_SAFE + 0.6;
   return { xmin: xmin - mx, xmax: xmax + mx, ymin: ymin - my, ymax: ymax + my };
@@ -867,7 +1015,7 @@ function drawScene() {
 
   const b = computeSceneBounds();
   const spanX = b.xmax - b.xmin, spanY = b.ymax - b.ymin;
-  const padLeft = 32, padRight = 16, padTop = 16, padBottom = 32;
+  const padLeft = 44, padRight = 16, padTop = 16, padBottom = 32;
   const scale = Math.min((width - padLeft - padRight) / spanX, (height - padTop - padBottom) / spanY);
   const offX = padLeft + (width - padLeft - padRight - spanX * scale) / 2 - b.xmin * scale;
   const offY = height - padBottom - (height - padTop - padBottom - spanY * scale) / 2 - (-b.ymin) * scale;
@@ -887,7 +1035,7 @@ function drawScene() {
   for (let gy = Math.ceil(b.ymin / 4) * 4; gy <= b.ymax; gy += 4) {
     ctx.beginPath(); ctx.moveTo(padLeft, Y(gy)); ctx.lineTo(width - padRight, Y(gy)); ctx.stroke();
     ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    ctx.fillText(gy.toFixed(0), padLeft - 5, Y(gy));
+    ctx.fillText(gy.toFixed(0), padLeft - 8, Y(gy));
   }
 
   // X and Y axis labels for the Cartesian space plot
@@ -898,7 +1046,7 @@ function drawScene() {
   ctx.textBaseline = "top";
   ctx.fillText("X Position (m)", padLeft + (width - padLeft - padRight) / 2, height - 14);
 
-  ctx.translate(12, padTop + (height - padTop - padBottom) / 2);
+  ctx.translate(8, padTop + (height - padTop - padBottom) / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText("Y Position (m)", 0, 0);
   ctx.restore();
@@ -963,14 +1111,14 @@ function drawScene() {
 function updateReadouts() {
   const ti = Math.min(sim.t.length - 1, idx);
   const d = sim.delta[ti];
-  deltaNum.textContent = (d >= 0 ? "+" : "\u2212") + Math.abs(d).toFixed(2) + " m/s\u00B2";
+  deltaNum.textContent = (d >= 0 ? "+" : "\u2212") + Math.abs(d).toFixed(2);
   deltaNum.className = "delta-num " + (d < 0 ? "neg" : "pos");
   deltaCaption.textContent =
     sim.cIdx !== null && ti >= sim.cIdx
       ? "both bodies have stopped"
       : d < 0
-      ? "true barrier falling faster than DPCBF assumes"
-      : "true barrier falling slower than DPCBF assumes";
+      ? "falls faster than assumed"
+      : "falls slower than assumed";
 
   timeNow.textContent = sim.t[ti].toFixed(2);
   timeScrub.value = Math.round((ti / (sim.t.length - 1)) * 1000);
@@ -1008,10 +1156,21 @@ function updateSliderFill(slider, value) {
     `${color} ${lo}%, ${color} ${hi}%, var(--border-strong) ${hi}%, var(--border-strong) 100%)`;
 }
 
-function positionZeroTick(slider, tick) {
+function updateSliderFillUnipolar(slider, value) {
   const min = parseFloat(slider.min), max = parseFloat(slider.max);
-  const zp = ((0 - min) / (max - min)) * 100;
-  tick.style.left = zp + "%";
+  const pct = ((value - min) / (max - min)) * 100;
+  slider.style.background =
+    `linear-gradient(to right, var(--ink) 0%, var(--ink) ${pct}%, var(--border-strong) ${pct}%, var(--border-strong) 100%)`;
+}
+
+function positionZeroTick(slider, tick, label) {
+  const min = parseFloat(slider.min), max = parseFloat(slider.max);
+  const pct = (0 - min) / (max - min);
+  const thumbW = 15;
+  const w = slider.clientWidth;
+  const x = pct * (w - thumbW) + thumbW / 2;
+  tick.style.left = x + "px";
+  if (label) label.style.left = x + "px";
 }
 
 function positionBubble(slider, bubble, text) {
@@ -1025,10 +1184,28 @@ function positionBubble(slider, bubble, text) {
   bubble.textContent = text;
 }
 
-function wireSlider(slider, tick, bubble, fmt) {
+function wireSlider(slider, tick, bubble, fmt, zeroLabel) {
   const refresh = () => {
     updateSliderFill(slider, parseFloat(slider.value));
-    positionZeroTick(slider, tick);
+    positionZeroTick(slider, tick, zeroLabel);
+    positionBubble(slider, bubble, fmt(parseFloat(slider.value)));
+  };
+  refresh();
+  slider.addEventListener("input", refresh);
+  const show = () => bubble.classList.add("show");
+  const hide = () => bubble.classList.remove("show");
+  slider.addEventListener("pointerdown", show);
+  slider.addEventListener("pointerup", hide);
+  slider.addEventListener("pointercancel", hide);
+  slider.addEventListener("focus", show);
+  slider.addEventListener("blur", hide);
+  window.addEventListener("resize", refresh);
+  return refresh;
+}
+
+function wireSliderUnipolar(slider, bubble, fmt) {
+  const refresh = () => {
+    updateSliderFillUnipolar(slider, parseFloat(slider.value));
     positionBubble(slider, bubble, fmt(parseFloat(slider.value)));
   };
   refresh();
@@ -1072,8 +1249,9 @@ function step(ts) {
 /* =====================================================================
    10. Events
    ===================================================================== */
-const refreshSliderA = wireSlider(sliderA, tickA, bubbleA, (v) => v.toFixed(2));
-const refreshSliderW = wireSlider(sliderW, tickW, bubbleW, (v) => v.toFixed(2));
+const refreshSliderA = wireSlider(sliderA, tickA, bubbleA, (v) => v.toFixed(2), zeroLabelA);
+const refreshSliderW = wireSlider(sliderW, tickW, bubbleW, (v) => v.toFixed(2), zeroLabelW);
+const refreshSliderV = wireSliderUnipolar(sliderV, bubbleV, (v) => v.toFixed(2));
 
 sliderA.addEventListener("input", () => {
   aObs = parseFloat(sliderA.value);
@@ -1083,6 +1261,11 @@ sliderA.addEventListener("input", () => {
 sliderW.addEventListener("input", () => {
   wObs = parseFloat(sliderW.value);
   valW.textContent = wObs.toFixed(2);
+  recompute();
+});
+sliderV.addEventListener("input", () => {
+  SCENARIO.vObs0 = parseFloat(sliderV.value);
+  valV.textContent = SCENARIO.vObs0.toFixed(2);
   recompute();
 });
 
@@ -1133,6 +1316,7 @@ window.addEventListener("resize", render);
    ===================================================================== */
 valA.textContent = aObs.toFixed(2);
 valW.textContent = wObs.toFixed(2);
+valV.textContent = SCENARIO.vObs0.toFixed(2);
 render();
 // Start autoplay loop immediately on load
 requestAnimationFrame(step);
