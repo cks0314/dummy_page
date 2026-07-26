@@ -191,13 +191,13 @@
         <h2 class="title is-3 has-text-centered mb-4">Proposed Algorithm: AR-DPCBF</h2>
         <div class="content mb-5">
             <p style="line-height: 1.7;">
-                The obstacle is modelled as a bounded adversary with a capability set $\mathcal{F} = \{\, |a_{obs}| \le a_{obs,\max},\ |\omega_{obs}| \le \omega_{obs,\max} \,\}$, summarised by a single scalar:
+                AR-DPCBF extends DPCBF by explicitly accounting for bounded obstacle maneuvers. Rather than assuming constant obstacle velocity, each obstacle is modeled as an adversary whose acceleration and turning rate are bounded by the capability set $\mathcal{F} = \{\, |a_{obs}| \le a_{obs,\max},\ |\omega_{obs}| \le \omega_{obs,\max} \,\}$, which is summarized by the scalar capability parameter:
             </p>
             <p class="has-text-centered" style="line-height: 2.2;">
                 $$\color{red}{\kappa := a_{obs,\max} + v_{obs,\max}\cdot \omega_{obs,\max}} \qquad [\text{m/s}^2]$$
             </p>
             <p style="line-height: 1.7;">
-                AR-DPCBF contracts the DPCBF parabola by subtracting a worst-case maneuver budget from both gains (Theorem 2):
+                The parameter $\kappa$ upper-bounds the obstacle's maneuvering authority and determines the amount by which the nominal DPCBF certificate must be contracted. AR-DPCBF preserves the original parabolic barrier and contracts its parameters according to the worst-case maneuver permitted:
             </p>
             <p class="has-text-centered" style="line-height: 2.2;">
                 $$\text{DPCBF} \quad \color{red}{h \;=\; \tilde v_{rel,x} + \lambda\, \tilde v_{rel,y}^2 + \mu}, \qquad \lambda = k_\lambda\dfrac{d}{\|v_{rel}\|}, \qquad \mu = k_\mu d$$
