@@ -15,7 +15,7 @@
   --a-bg:#F3EEFF;--a-b:#7C3AED;--a-v:#5B21B6;}
 body{background:transparent;font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;padding:14px 16px 20px;}
 .hdr{text-align:center;margin-bottom:20px;}
-.hdr h1{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px;}
+.hdr h1{font-size:24px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px;}
 .hdr p{font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace;}
 .card{background:transparent;border:none;border-radius:14px;
   padding:14px 18px 12px;max-width:1020px;margin:0 auto;}
@@ -74,6 +74,9 @@ input[type=range]:active{cursor:grabbing;}
 </head>
 <body>
 <div class="card embed">
+<div class="hdr">
+  <h1>Parametric Barrier Geometry</h1>
+</div>
 <div class="plots">
 <div class="pw"><div class="pt"><b>(A)</b> Physical Space<br/><span style="font-size:12px;font-weight:400;color:#7a8597">Robot–Obstacle Geometry</span></div><canvas height="400" id="cp"></canvas></div>
 <div class="pw"><div class="pt"><b>(B)</b> Velocity Space<br/><span style="font-size:12px;font-weight:400;color:#7a8597">Barrier Validity</span></div><canvas height="400" id="cv"></canvas></div>
