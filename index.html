@@ -2,24 +2,18 @@
 <html lang="en">
 
 <head>
-    <!-- MathJax -->
-    <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      svg: {
-        fontCache: 'global'
-      }
-    };
-    </script>
-    
-    <script
-      id="MathJax-script"
-      async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
+    <!-- KaTeX (math-italic font genuinely derived from cmmi10 / cmmib10, unlike MathJax's redrawn approximation) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '\\[', right: '\\]', display: true},
+                {left: '$', right: '$', display: false},
+                {left: '\\(', right: '\\)', display: false}
+            ]
+        });"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -140,6 +134,21 @@
 <section class="section section-compact pt-5" id="motivation">
     <div class="container is-max-desktop">
         <h2 class="title is-3 has-text-centered mb-3">Motivation</h2>
+        <div class="content mb-5">
+            <p style="line-height: 1.7;">
+                Control Barrier Functions certify safety by enforcing $\color{red}{\dot h \geq -\alpha(h)}$ in a QP. The Dynamic Parabolic CBF (DPCBF) does this elegantly for dynamic obstacles: it replaces the conservative collision cone with a state-dependent parabola in the line-of-sight (LoS) velocity frame, recovering feasibility in clutter where cone-based methods have none.
+            </p>
+            <p style="line-height: 1.7;">
+                But DPCBF evaluates its Lie derivative assuming the obstacle holds constant velocity. If the obstacle accelerates or turns, the true derivative picks up an uncompensated term:
+            </p>
+            <p class="has-text-centered" style="line-height: 2.2;">
+                $$\color{red}{[\dot h]_{\text{true}} = [\dot h]_{\text{DPCBF}} + \Delta(t)}$$
+                $$\Delta(t) = a_{obs}\cos\tilde\theta_{obs} \;+\; v_{obs}\,\omega_{obs}\Big[\,2\lambda\,\tilde v_{rel,y}\cos\tilde\theta_{obs} \;-\; \sin\tilde\theta_{obs}\,\Big]$$
+            </p>
+            <p style="line-height: 1.7;">
+                When $\Delta(t) < 0$, the CBF condition can be satisfied by the QP while being violated in reality. There is no infeasibility, no warning &mdash; the safety guarantee simply fails silently, and the first symptom is a collision. This repository formalizes that failure mode and fixes it.
+            </p>
+        </div>
         <div class="interactive-card">
             <div class="level is-mobile mb-2">
                 <div class="level-left"></div>
@@ -180,9 +189,21 @@
 <section class="section section-compact py-6" id="insight">
     <div class="container is-max-desktop">
         <h2 class="title is-3 has-text-centered mb-4">Proposed Algorithm: AR-DPCBF</h2>
-        <p class="subtitle has-text-centered insight-subtitle mb-5" style="line-height: 1.6;">
-            Instead of assuming constant obstacle velocity, <span class="highlight">AR-DPCBF models obstacle maneuverability explicitly</span> and analytically reserves the safety margin required under worst-case bounded maneuvers.
-        </p>
+        <div class="content mb-5">
+            <p style="line-height: 1.7;">
+                The obstacle is modelled as a bounded adversary with a capability set $\mathcal{F} = \{\, |a_{obs}| \le a_{obs,\max},\ |\omega_{obs}| \le \omega_{obs,\max} \,\}$, summarised by a single scalar:
+            </p>
+            <p class="has-text-centered" style="line-height: 2.2;">
+                $$\color{red}{\kappa := a_{obs,\max} + v_{obs,\max}\cdot \omega_{obs,\max}} \qquad [\text{m/s}^2]$$
+            </p>
+            <p style="line-height: 1.7;">
+                AR-DPCBF contracts the DPCBF parabola by subtracting a worst-case maneuver budget from both gains (Theorem 2):
+            </p>
+            <p class="has-text-centered" style="line-height: 2.2;">
+                $$\text{DPCBF} \quad \color{red}{h \;=\; \tilde v_{rel,x} + \lambda\, \tilde v_{rel,y}^2 + \mu}, \qquad \lambda = k_\lambda\dfrac{d}{\|v_{rel}\|}, \qquad \mu = k_\mu d$$
+                $$\text{AR-DPCBF} \quad \color{red}{h^* \;=\; \tilde v_{rel,x} + \lambda^*\, \tilde v_{rel,y}^2 + \mu^*}, \qquad \lambda^* = \lambda - \dfrac{\kappa}{\gamma a_{\max}\|v_{rel}\|}, \qquad \mu^* = \mu - \dfrac{\kappa d}{\gamma \|v_{rel}\|}$$
+            </p>
+        </div>
 
         <!-- Interactive Visualization Card -->
         <div class="interactive-card">

@@ -85,34 +85,8 @@
     font-weight: 700;
     font-size: clamp(21px, 2.7vw, 27px);
     line-height: 1.16;
-    margin: 0 0 10px;
+    margin: 0 0 18px;
     letter-spacing: -0.01em;
-  }
-
-  p.intro {
-    font-family: var(--serif);
-    font-size: 15px;
-    line-height: 1.6;
-    color: #1e293b;
-    max-width: 800px;
-    margin: 0 0 14px;
-  }
-
-  /* Equation Highlighting Styles (Red Text, Clean Background) */
-  p.intro .katex-display {
-    margin: 0.8em 0;
-    padding: 4px 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    color: var(--eq-red); /* Highlight equations in red */
-  }
-
-  p.intro .katex {
-    background: transparent;
-    padding: 0;
-    border: none;
-    color: var(--eq-red); /* Highlight equations in red */
   }
 
   /* ---------------- console (controls) ---------------- */
@@ -424,21 +398,7 @@
 
   <div class="accent-bar"></div>
   <div class="eyebrow">The Fundamental Gap</div>
-  <h2 class="title">DPCBF assumes the obstacle never maneuvers</h2>
-  <p class="intro">
-    Its safety-critical Lie derivative $L_f h$ evaluates $\dot x_{obs}$ as
-    $v_{obs}[\cos\theta_{obs}, \sin\theta_{obs}]^\top$ &mdash; the current velocity, extended
-    forever. When the obstacle really has acceleration $a_{obs}$ and turning rate $\omega_{obs}$,
-    the true rate differs by
-    $$
-    \Delta(t) = a_{obs}\cos\tilde\theta_{obs} \;+\; v_{obs}\,\omega_{obs}
-    \Big[\,2\lambda\,\tilde v_{rel,y}\cos\tilde\theta_{obs} \;-\; \sin\tilde\theta_{obs}\,\Big],
-    \qquad \tilde\theta_{obs} = \theta_{obs} - \alpha .
-    $$
-    Whenever $\Delta(t) < 0$, the QP's constraint $L_f h + L_g h\,u \ge -\alpha(h)$ can hold on
-    paper while the true barrier is already violated &mdash; the safety guarantee fails silently.
-    Choose a maneuver below and watch the gap open.
-  </p>
+  <h2 class="title">Failure Mechanism of DPCBF</h2>
 
   <div class="console">
     <div class="slider-field">
@@ -1320,6 +1280,21 @@ valV.textContent = SCENARIO.vObs0.toFixed(2);
 render();
 // Start autoplay loop immediately on load
 requestAnimationFrame(step);
+
+// Re-sync slider bubble/tick pixel positions once web fonts (and the rest of
+// the page) have actually finished loading. The initial call above can run
+// before the Source Serif / IBM Plex Mono fonts swap in, and that font swap
+// reflows the console layout — without this, the cached pre-font-load pixel
+// positions stick, which is most visible at the wider fullscreen width.
+function resyncSliders() {
+  refreshSliderA();
+  refreshSliderW();
+  refreshSliderV();
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(resyncSliders);
+}
+window.addEventListener("load", resyncSliders);
 </script>
 </body>
 </html>
