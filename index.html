@@ -317,18 +317,14 @@
             <p class="figure-caption mt-3">Buffer AR-DPCBF preserves the nominal safety constraint while relaxing only the adversarial margin.</p>
         </div>
 
-        <p class="subtitle has-text-centered results-subtitle mt-5 mb-4" style="line-height: 1.6;">
-            Beyond qualitative demonstrations, controlled sweeps over adversary count and capability confirm the effect quantitatively.
-        </p>
 
         <div class="result-card mb-4">
-            <h3 class="title is-4 mb-3">Safety Scales With Adversary Count</h3>
+            <h3 class="title is-4 mb-3">Quantitative Results</h3>
             <img src="static/images/fig_adversary_sweep_updated.png" alt="Violation and collision rate versus number of adversaries" class="result-figure">
             <p class="figure-caption mt-3">Barrier-violation rate (a) and collision rate (b) as the number of adversarial obstacles increases at fixed density $N=15$. <span class="hl-blue">AR-DPCBF variants substantially reduce both metrics</span> across the sweep, with buffer AR-DPCBF performing best throughout.</p>
         </div>
 
         <div class="result-card mb-4">
-            <h3 class="title is-4 mb-3">Robust Across Capability, Lower Control Effort</h3>
             <img src="static/images/k_sweep_cost.png" alt="Barrier violation rate versus adversary capability and QP cost comparison" class="result-figure">
             <p class="figure-caption mt-3">(a) Barrier-violation rate versus adversary capability $\kappa$: the AR-DPCBF variants remain in a low-violation cluster well separated from DPCBF, even as $\kappa$ approaches the validity edge $\kappa = c_{min}$. (b) Despite this added robustness, <span class="hl-blue">the AR-DPCBF variants require lower median QP cost</span> than the reactive DPCBF baseline.</p>
         </div>
