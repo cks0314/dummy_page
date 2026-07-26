@@ -37,6 +37,11 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="static/css/style.css">
+
+    <!-- Scoped blue highlight style for important terms -->
+    <style>
+        .hl-blue { color: #2563eb; font-weight: 600; }
+    </style>
 </head>
 
 <body>
@@ -100,7 +105,7 @@
             Your browser does not support the video tag.
         </video>
         <p class="has-text-centered is-size-5 mt-3">
-            <strong>AR-DPCBF</strong> guarantees collision-free navigation under bounded adversarial obstacle maneuvers while maintaining real-time computational performance.
+            <strong>AR-DPCBF</strong> guarantees <span class="hl-blue">collision-free navigation</span> under <span class="hl-blue">bounded adversarial obstacle maneuvers</span> while maintaining real-time computational performance.
         </p>
     </div>
 </section>
@@ -123,7 +128,7 @@
             <!-- Text -->
             <div class="column is-6">
                 <p class="content is-medium has-text-justified">
-                    We consider a <strong>bicycle-model robot</strong> navigating toward a goal in an environment populated with <strong>independently maneuvering unicycle obstacles</strong>. Unlike constant-velocity obstacles, these agents may continuously change their speed and heading, producing time-varying relative motion. The robot must generate <span class="highlight">collision-free trajectories</span> while respecting nonholonomic dynamics and reasoning about nearby obstacles in real time.
+                    We consider a <strong>bicycle-model robot</strong> navigating toward a goal in an environment populated with <strong>independently maneuvering unicycle obstacles</strong>. Unlike constant-velocity obstacles, these agents may continuously change their speed and heading, producing <span class="hl-blue">time-varying relative motion</span>. The robot must generate <span class="highlight">collision-free trajectories</span> while respecting <span class="hl-blue">nonholonomic dynamics</span> and reasoning about nearby obstacles in real time.
                 </p>
             </div>
         </div>
@@ -136,17 +141,17 @@
         <h2 class="title is-3 has-text-centered mb-3">Motivation</h2>
         <div class="content mb-5">
             <p style="line-height: 1.7;">
-                Control Barrier Functions certify safety by enforcing $\color{red}{\dot h \geq -\alpha(h)}$ in a QP. The Dynamic Parabolic CBF (DPCBF) does this elegantly for dynamic obstacles: it replaces the conservative collision cone with a state-dependent parabola in the line-of-sight (LoS) velocity frame, recovering feasibility in clutter where cone-based methods have none.
+                Control Barrier Functions certify safety by enforcing $\color{red}{\dot h \geq -\alpha(h)}$ in a QP. The <span class="hl-blue">Dynamic Parabolic CBF (DPCBF)</span> does this elegantly for dynamic obstacles: it replaces the conservative collision cone with a state-dependent parabola in the line-of-sight (LoS) velocity frame, recovering feasibility in clutter where cone-based methods have none.
             </p>
             <p style="line-height: 1.7;">
-                But DPCBF evaluates its Lie derivative assuming the obstacle holds constant velocity. If the obstacle accelerates or turns, the true derivative picks up an uncompensated term:
+                But DPCBF evaluates its Lie derivative assuming the obstacle holds <span class="hl-blue">constant velocity</span>. If the obstacle accelerates or turns, the true derivative picks up an uncompensated term:
             </p>
             <p class="has-text-centered" style="line-height: 2.2;">
                 $$\color{red}{[\dot h]_{\text{true}} = [\dot h]_{\text{DPCBF}} + \Delta(t)}$$
                 $$\Delta(t) = a_{obs}\cos\tilde\theta_{obs} \;+\; v_{obs}\,\omega_{obs}\Big[\,2\lambda\,\tilde v_{rel,y}\cos\tilde\theta_{obs} \;-\; \sin\tilde\theta_{obs}\,\Big]$$
             </p>
             <p style="line-height: 1.7;">
-                When $\Delta(t) < 0$, the CBF condition can be satisfied by the QP while being violated in reality. There is no infeasibility, no warning &mdash; the safety guarantee simply fails silently, and the first symptom is a collision. This repository formalizes that failure mode and fixes it.
+                When $\Delta(t) < 0$, the CBF condition can be satisfied by the QP while being violated in reality. There is no infeasibility, no warning &mdash; <span class="hl-blue">the safety guarantee simply fails silently</span>, and the first symptom is a collision. This repository formalizes that failure mode and fixes it.
             </p>
         </div>
         <div class="interactive-card">
@@ -163,7 +168,31 @@
             <iframe src="static/interactive/motivation_updated.html" class="interactive-frame" scrolling="no" style="overflow: hidden;" loading="lazy"></iframe>
 
             <p class="figure-caption mt-3">
-                <strong>Interactive illustration of the failure mechanism.</strong> Adjust obstacle acceleration <span class="highlight">$a_{\rm obs}$</span> and turning rate <span class="highlight">$\omega_{\rm obs}$</span> to observe how the disturbance $\Delta(t)$ causes the true barrier dynamics to deviate from nominal predictions.
+                <strong>Interactive illustration of the failure mechanism.</strong> Adjust obstacle acceleration <span class="highlight">$a_{\rm obs}$</span> and turning rate <span class="highlight">$\omega_{\rm obs}$</span> to observe how the <span class="hl-blue">disturbance $\Delta(t)$</span> causes the true barrier dynamics to deviate from nominal predictions.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- A NEW SAFETY FRAMEWORK: A-CBF -->
+<section class="section section-compact py-5" id="acbf">
+    <div class="container is-max-desktop">
+        <h2 class="title is-3 has-text-centered mb-4">A New Safety Framework: Adversarial Control Barrier Functions</h2>
+        <div class="content mb-5">
+            <p style="line-height: 1.7;">
+                The failure of DPCBF arises because the classical CBF condition certifies safety only under the <span class="hl-blue">assumed obstacle dynamics</span>. Once obstacles are allowed to accelerate or turn, satisfying the nominal barrier condition no longer guarantees that the true barrier dynamics remain safe.
+            </p>
+            <p style="line-height: 1.7;">
+                To address this limitation, we introduce the <strong>Adversarial Control Barrier Function (A-CBF)</strong>, a new validity framework that explicitly accounts for bounded obstacle maneuvers. Instead of certifying safety for a single predicted obstacle trajectory, an A-CBF guarantees that the barrier condition remains valid against <span class="hl-blue">every admissible obstacle maneuver</span> within the capability set $\mathcal{F}$.
+            </p>
+            <p style="line-height: 1.7;">
+                This perspective naturally leads to a <span class="hl-blue">two-player zero-sum differential game</span>. The robot selects a control input to maximize safety, while the obstacle acts as an adversary that chooses the maneuver within $\mathcal{F}$ that minimizes the barrier derivative. An A-CBF is valid only if the robot can satisfy the barrier condition against this <span class="hl-blue">worst-case disturbance</span>, i.e.,
+            </p>
+            <p class="has-text-centered" style="line-height: 2.2;">
+                $$\boxed{\ \color{red}{\min_{\mathbf{d}\in\mathcal{F}} \; \max_{\mathbf{u}\in\mathcal{U}} \; \Big(\dot h(\mathbf{x},\mathbf{u},\mathbf{d}) + \alpha(h)\Big) \ge 0}\ }$$
+            </p>
+            <p style="line-height: 1.7;">
+                Equivalently, for every admissible obstacle maneuver there exists a control input that preserves the barrier condition. AR-DPCBF is then constructed as a <span class="hl-blue">geometry-preserving barrier</span> that satisfies this adversarial validity criterion while retaining the computational efficiency of the original DPCBF.
             </p>
         </div>
     </div>
@@ -191,20 +220,20 @@
         <h2 class="title is-3 has-text-centered mb-4">Proposed Algorithm: AR-DPCBF</h2>
         <div class="content mb-5">
             <p style="line-height: 1.7;">
-                AR-DPCBF extends DPCBF by explicitly accounting for bounded obstacle maneuvers. Rather than assuming constant obstacle velocity, each obstacle is modeled as an adversary whose acceleration and turning rate are bounded by the capability set $\mathcal{F} = \{\, |a_{obs}| \le a_{obs,\max},\ |\omega_{obs}| \le \omega_{obs,\max} \,\}$, which is summarized by the scalar capability parameter:
+                AR-DPCBF extends DPCBF by explicitly accounting for <span class="hl-blue">bounded obstacle maneuvers</span>. Rather than assuming constant obstacle velocity, each obstacle is modeled as an adversary whose acceleration and turning rate are bounded by the capability set $\mathcal{F} = \{\, |a_{obs}| \le a_{obs,\max},\ |\omega_{obs}| \le \omega_{obs,\max} \,\}$, which is summarized by the scalar capability parameter:
             </p>
             <p class="has-text-centered" style="line-height: 2.2;">
                 $$\color{red}{\kappa := a_{obs,\max} + v_{obs,\max}\cdot \omega_{obs,\max}} \qquad [\text{m/s}^2]$$
             </p>
             <p style="line-height: 1.7;">
-                The parameter $\kappa$ upper-bounds the obstacle's maneuvering authority and determines the amount by which the nominal DPCBF certificate must be contracted. AR-DPCBF preserves the original parabolic barrier and contracts its parameters according to the worst-case maneuver permitted by $\kappa$:
+                The parameter $\kappa$ upper-bounds the obstacle's maneuvering authority and determines the amount by which the nominal DPCBF certificate must be contracted. AR-DPCBF preserves the original parabolic barrier and contracts its parameters according to the <span class="hl-blue">worst-case maneuver</span> permitted by $\kappa$:
             </p>
             <p class="has-text-centered" style="line-height: 2.2;">
                 $$\text{DPCBF} \quad \color{red}{h \;=\; \tilde v_{rel,x} + \lambda\, \tilde v_{rel,y}^2 + \mu}, \qquad \lambda = k_\lambda\dfrac{d}{\|v_{rel}\|}, \qquad \mu = k_\mu d$$
                 $$\text{AR-DPCBF} \quad \color{red}{h^* \;=\; \tilde v_{rel,x} + \lambda^*\, \tilde v_{rel,y}^2 + \mu^*}, \qquad \lambda^* = \lambda - \dfrac{\kappa}{\gamma a_{\max}\|v_{rel}\|}, \qquad \mu^* = \mu - \dfrac{\kappa d}{\gamma \|v_{rel}\|}$$
             </p>
             <p style="line-height: 1.7;">
-                As the admissible obstacle capability $\kappa$ increases, the AR-DPCBF parabola widens, enlarging the adversarial unsafe set ${h*<0}$ and correspondingly shrinking the certified safe set ${h* \ge 0}$. Consequently, the AR-DPCBF safe set forms a conservative inner approximation of the nominal DPCBF safe set, reserving sufficient safety margin to guarantee validity against all admissible obstacle maneuvers. When $\kappa=0$, the contraction vanishes, the adversarial and nominal safe sets coincide, and AR-DPCBF exactly recovers the original DPCBF.
+                As the admissible obstacle capability $\kappa$ increases, the AR-DPCBF parabola widens, enlarging the adversarial unsafe set $\{h^*<0\}$ and correspondingly shrinking the certified safe set $\{h^* \ge 0\}$. Consequently, <span class="hl-blue">the AR-DPCBF safe set forms a conservative inner approximation of the nominal DPCBF safe set</span>, reserving sufficient safety margin to guarantee validity against all admissible obstacle maneuvers. When $\kappa=0$, the contraction vanishes, the adversarial and nominal safe sets coincide, and AR-DPCBF exactly recovers the original DPCBF.
             </p>
         </div>
 
@@ -223,7 +252,7 @@
             <iframe src="static/interactive/ar_dpcbf_variation_embed_updated.html" class="interactive-frame frame-large" scrolling="no" style="overflow: hidden;" loading="lazy"></iframe>
 
             <p class="figure-caption mt-3">
-                <strong>Interactive AR-DPCBF visualization.</strong> Adjust capability $\kappa$, relative speed $||\tilde{\mathbf v}_{rel}||$, distance $d$, and heading $\theta$ to observe how bounded maneuverability contracts both safe sets.
+                <strong>Interactive AR-DPCBF visualization.</strong> Adjust capability $\kappa$, relative speed $||\tilde{\mathbf v}_{rel}||$, distance $d$, and heading $\theta$ to observe how <span class="hl-blue">bounded maneuverability contracts both safe sets</span>.
             </p>
         </div>
 
@@ -232,19 +261,19 @@
             <div class="column">
                 <div class="box insight-box p-5" style="background-color: rgba(129, 216, 208, 0.25);">
                     <h4 class="title is-5 mb-3"><i class="fas fa-user-shield text-accent mr-1"></i> Bounded Adversary</h4>
-                    <p style="line-height: 1.6;">Obstacles are modeled with dynamic capabilities bounded by known physical limits instead of constant-velocity assumptions.</p>
+                    <p style="line-height: 1.6;">Obstacles are modeled with <span class="hl-blue">dynamic capabilities</span> bounded by known physical limits instead of constant-velocity assumptions.</p>
                 </div>
             </div>
             <div class="column">
                 <div class="box insight-box p-5" style="background-color: rgba(217, 158, 130, 0.25);">
                     <h4 class="title is-5 mb-3"><i class="fas fa-ruler-combined text-accent mr-1"></i> Analytical Margin</h4>
-                    <p style="line-height: 1.6;">The barrier contracts analytically as maneuverability increases, reserving exact safety margins for worst-case maneuvers.</p>
+                    <p style="line-height: 1.6;">The barrier contracts analytically as maneuverability increases, reserving <span class="hl-blue">exact safety margins</span> for worst-case maneuvers.</p>
                 </div>
             </div>
             <div class="column">
                 <div class="box insight-box p-5" style="background-color: rgba(174, 130, 217, 0.25);">
                     <h4 class="title is-5 mb-3"><i class="fas fa-check-circle text-accent mr-1"></i> Provable Safety</h4>
-                    <p style="line-height: 1.6;">Guarantees remain formally valid under any obstacle maneuver within physical capability limits.</p>
+                    <p style="line-height: 1.6;">Guarantees remain <span class="hl-blue">formally valid</span> under any obstacle maneuver within physical capability limits.</p>
                 </div>
             </div>
         </div>
@@ -277,7 +306,7 @@
         <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Conventional DPCBF Fails Under Obstacle Maneuvers</h3>
             <img src="static/gifs/demo_compare_13_status.gif" alt="Comparison 1" class="result-gif">
-            <p class="figure-caption mt-3">Conventional DPCBF fails under obstacle maneuvers, whereas AR-DPCBF variants safely reach the goal.</p>
+            <p class="figure-caption mt-3">Conventional DPCBF fails under obstacle maneuvers, whereas <span class="hl-blue">AR-DPCBF variants safely reach the goal</span>.</p>
         </div>
 
         <div class="result-card mb-4">
@@ -298,13 +327,13 @@
         <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Safety Scales With Adversary Count</h3>
             <img src="static/images/fig_adversary_sweep_updated.png" alt="Violation and collision rate versus number of adversaries" class="result-figure">
-            <p class="figure-caption mt-3">Barrier-violation rate (a) and collision rate (b) as the number of adversarial obstacles increases at fixed density $N=15$. AR-DPCBF variants substantially reduce both metrics across the sweep, with buffer AR-DPCBF performing best throughout.</p>
+            <p class="figure-caption mt-3">Barrier-violation rate (a) and collision rate (b) as the number of adversarial obstacles increases at fixed density $N=15$. <span class="hl-blue">AR-DPCBF variants substantially reduce both metrics</span> across the sweep, with buffer AR-DPCBF performing best throughout.</p>
         </div>
 
         <div class="result-card mb-4">
             <h3 class="title is-4 mb-3">Robust Across Capability, Lower Control Effort</h3>
             <img src="static/images/k_sweep_cost.png" alt="Barrier violation rate versus adversary capability and QP cost comparison" class="result-figure">
-            <p class="figure-caption mt-3">(a) Barrier-violation rate versus adversary capability $\kappa$: the AR-DPCBF variants remain in a low-violation cluster well separated from DPCBF, even as $\kappa$ approaches the validity edge $\kappa = c_{min}$. (b) Despite this added robustness, the AR-DPCBF variants require lower median QP cost than the reactive DPCBF baseline.</p>
+            <p class="figure-caption mt-3">(a) Barrier-violation rate versus adversary capability $\kappa$: the AR-DPCBF variants remain in a low-violation cluster well separated from DPCBF, even as $\kappa$ approaches the validity edge $\kappa = c_{min}$. (b) Despite this added robustness, <span class="hl-blue">the AR-DPCBF variants require lower median QP cost</span> than the reactive DPCBF baseline.</p>
         </div>
     </div>
 </section>
